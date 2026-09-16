@@ -18,8 +18,13 @@ from pptx import Presentation
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Emu
 
-DECK = "/projects/sandbox/Model-Builder-ABACUS-2022/presentation/ModelBuilder_4.2_Presentacion.pptx"
-OUT = "/projects/sandbox/assets/slides_png"
+LANG = os.environ.get("MB_LANG", "es")
+DECK = os.path.join(
+    "/projects/sandbox/Model-Builder-ABACUS-2022/presentation",
+    "ModelBuilder_4.2_Presentacion.pptx" if LANG == "es"
+    else "ModelBuilder_4.2_Presentation.pptx")
+OUT = ("/projects/sandbox/assets/slides_png" if LANG == "es"
+       else "/projects/sandbox/assets/slides_png_%s" % LANG)
 PPI = 120.0
 EMU_PER_INCH = 914400.0
 

@@ -13,8 +13,11 @@ import os
 from PIL import Image, ImageDraw, ImageFilter
 
 REPO = "/projects/sandbox/Model-Builder-ABACUS-2022"
-SCREENS = "/projects/sandbox/assets/screens"
-OUT = "/projects/sandbox/assets/framed"
+LANG = os.environ.get("MB_LANG", "es")
+SCREENS = ("/projects/sandbox/assets/screens" if LANG == "es"
+           else "/projects/sandbox/assets/screens_%s" % LANG)
+OUT = ("/projects/sandbox/assets/framed" if LANG == "es"
+       else "/projects/sandbox/assets/framed_%s" % LANG)
 os.makedirs(OUT, exist_ok=True)
 
 RADIUS = 18
@@ -110,7 +113,12 @@ def trim_white(image, tolerance=248):
 def main():
     written = []
     for path in sorted(glob.glob(os.path.join(SCREENS, "gui_*.png"))):
-        shot = trim_app_background(Image.open(path))
+        raw = Image.open(path)
+        if raw.size[0] > 1500:
+            # The modal dialog is grabbed from the root window; crop it back
+            # to the application window so every capture is framed alike.
+            raw = raw.crop((0, 0, 1500, min(1150, raw.size[1])))
+        shot = trim_app_background(raw)
         framed = frame(shot)
         target = os.path.join(OUT, os.path.basename(path))
         framed.save(target)

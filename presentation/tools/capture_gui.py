@@ -18,7 +18,9 @@ import sys
 import time
 
 REPO = "/projects/sandbox/Model-Builder-ABACUS-2022"
-OUT = "/projects/sandbox/assets/screens"
+LOCALE = os.environ.get("MB_LOCALE", "es")
+OUT = ("/projects/sandbox/assets/screens" if LOCALE == "es"
+       else "/projects/sandbox/assets/screens_%s" % LOCALE)
 sys.path.insert(0, REPO)
 os.chdir(REPO)
 os.makedirs(OUT, exist_ok=True)
@@ -33,6 +35,7 @@ MODE = os.environ.get("MB_MODE", "tabs")
 
 TAB_NAMES = ["01_proyecto", "02_geometria_din", "03_malla_materiales",
              "04_analisis", "05_din6892_fva", "06_ejecutar_evidencias"]
+DIALOG_NAME = "gui_07_validacion.png"
 
 
 def grab(window_id, path):
@@ -84,7 +87,7 @@ def capture_tabs(root, app, window_id):
 
 def capture_dialog(root, app, window_id):
     """Grab the real modal validation dialog, then dismiss it."""
-    path = os.path.join(OUT, "gui_07_validacion.png")
+    path = os.path.join(OUT, DIALOG_NAME)
 
     def shoot():
         grab("root", path)
@@ -120,6 +123,10 @@ def main():
     except tk.TclError:
         pass
     app = gui.ModelBuilderApp(root)
+    if LOCALE != "es":
+        # The same code path the language combobox uses, so the capture shows
+        # the application's own translation rather than a patched catalogue.
+        app._set_language(LOCALE)
     root.geometry(GEOM)
     settle(root, 1.3)
     window_id = hex(root.winfo_id())
