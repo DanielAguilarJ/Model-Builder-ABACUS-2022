@@ -1,0 +1,143 @@
+PARAMETRIC BUILD AUDIT  (v3.0, DIN 6885)
+model: V3_FULL      built: 2026-09-03 17:30:10
+key_form: A   hub_type: cylindrical   element_order: linear (C3D8)
+steps=['Initial'] jobs=[] constraints=[] interactions=[]
+parameter check: 0 error(s), 1 warning(s)
+   [WARN ] ar_notch_expect          The notch elements will be about 38 times longer axially than in-plane (global seed 2.50 vs notch size 0.0654 mm). Either lower the shaft seed or lower notch.arc_elems.
+   [INFO ] hub_shorter_than_key     The hub (38.00) is shorter than the key (50.00), so the key ends stand outside the hub and carry no hub load. Normal for a Form A key that fills the keyway, but note [3]: the peak shear sits at the keyway end.
+
+DERIVED GEOMETRY
+   D=40.000  R=20.000  L=120.000 (=3.0 x D)
+   DIN 6885 band 38..44 mm: b=12.00  h=8.00  t1=5.00  t2=3.30
+   keyway: R_cap=6.00  z0=11.00  z1=61.00  dz=38.00  yF=15.000  r2=0.250
+           r2 DIN range for b=12 is 0.25..0.40 mm -> inside
+   key   : Form A  l=50.00  c=0.800 (phi_c=45 deg)  x_w=6.00  y_min=15.000  y_max=23.000
+   hub   : d_i=40.00  d_a=80.00 (QA=2.000)  L_hub=38.00  roof=23.300  r1=0.250
+   top clearance g_c = t1 + t2 - h = 0.300
+   R_cap = 6.00 (auto b/2)
+   mesh seeds: shaft 2.5000 (auto D/16)  key 0.6000 (auto b/20)  hub 2.0000 (auto d_a/40)
+
+WHY c = 0.800 ?  (Sec 6.1)
+   The bottom corner chamfer has to clear the keyway ROOT FILLET r2.
+   Fillet tangent points give   y - x = y_F - x_w + r2 = 9.250
+   Chamfer face is the line     y - x = y_min - (x_w - c) = 9.800
+   => condition  c >= r2 = 0.250 ;  chosen c = 0.800
+   => perpendicular clearance (c - r2)/sqrt(2) = 0.3889 mm
+   Top chamfer clearance to the hub roof fillet r1 = 0.6086 mm
+   Straight flank left for torque transfer h - 2c = 6.400 mm
+
+MATERIALS
+   STEEL_SHAFT  grade=C45   E=210000 MPa  nu=0.30  rho=7.850e-09 t/mm^3  Re(ref)=430.0 MPa
+   STEEL_HUB    grade=C45   E=210000 MPa  nu=0.30  rho=7.850e-09 t/mm^3  Re(ref)=430.0 MPa
+   STEEL_KEY    grade=C45   E=210000 MPa  nu=0.30  rho=7.850e-09 t/mm^3  Re(ref)=430.0 MPa
+
+PART Shaft
+   nodes=41194 elements=39983 (91.8% hex) types={'C3D8': 36700, 'C3D4': 3283}
+   cells=96 meshed in 6.7s with 0 repair pass(es)
+   sections=['SEC_STEEL_SHAFT']
+   local bbox=[40.0, 40.0, 120.0]
+   failed=0 warnings=2627 aspectRatio worst=62.1614608765 avg=6.52066707611 components=1
+   notch seeding: 4 arc edge(s) @ 6 elem, band bias 0.0654 -> 0.5000 mm, 24 band edge(s), 16 fade-out edge(s), 20 graded cell(s) exempt from AR repair
+PART Key
+   nodes=31101 elements=31873 (85.1% hex) types={'C3D8': 27120, 'C3D4': 4753}
+   cells=48 meshed in 2.1s with 0 repair pass(es)
+   sections=['SEC_STEEL_KEY']
+   local bbox=[12.0, 50.0, 8.0]
+   failed=0 warnings=350 aspectRatio worst=6.32342433929 avg=1.8026061058 components=1
+PART Hub
+   nodes=37259 elements=33237 (98.2% hex) types={'C3D8': 32642, 'C3D4': 595}
+   cells=32 meshed in 3.6s with 0 repair pass(es)
+   sections=['SEC_STEEL_HUB']
+   local bbox=[80.0, 80.0, 38.0]
+   failed=0 warnings=1538 aspectRatio worst=46.0140724182 avg=7.46211004257 components=1
+   notch seeding: 4 arc edge(s) @ 6 elem, band bias 0.0654 -> 0.5000 mm, 48 band edge(s), 8 fade-out edge(s), 20 graded cell(s) exempt from AR repair
+
+TOTAL nodes=109554 elements=105093 (91.8% hex)
+ASSEMBLY bounding boxes
+   HUB-1      lo=[-40.0, -40.0, 17.0] hi=[40.0, 40.0, 55.0]
+   KEY-1      lo=[-6.0, 15.0, 11.0] hi=[6.0, 23.0, 61.0]
+   SHAFT-1    lo=[-20.0, -20.0, 0.0] hi=[20.0, 20.0, 120.0]
+SETS: ['ALL_HUB_ELEMENTS', 'ALL_HUB_NODES', 'ALL_KEY_ELEMENTS', 'ALL_KEY_NODES', 'ALL_SHAFT_ELEMENTS', 'ALL_SHAFT_NODES', 'NOTCH_SHAFT']
+
+FIT / CLEARANCE CHECKS
+   shaft OD vs hub bore                0.0000 mm  [ok] gap>=0 (0 = line-to-line seat)
+   key base vs keyway floor            0.0000 mm  [ok] should be ~0
+   shaft keyway flank/side             0.0000 mm  [ok] >=0 (0 = tight fit, DIN P9/h9)
+   hub groove flank/side               0.0107 mm  [ok] >=0
+   key top vs groove roof (g_c)        0.3000 mm  [ok] gap>=0
+   key length vs keyway (Form A)       0.0000 mm  [ok] l <= 50.00
+   hub length vs keyway span           12.0000 mm  [info] info only
+   plain shaft after keyway            59.0000 mm  [ok] room for the end BC (want >= D/4 = 10.00)
+   chamfer c vs root fillet r2         0.5500 mm  [ok] need c >= r2 = 0.250
+     -> bottom chamfer clearance       0.3889 mm  [ok] = (c - r2)/sqrt(2)
+     -> top chamfer clearance          0.6086 mm  [ok] vs hub roof fillet r1
+   straight flank left on key          6.4000 mm  [ok] = h - 2c, load-carrying height
+   hub wall left above keyway          16.7000 mm  [ok] = d_a/2 - (R + t2); raise Q_A if <= 0
+
+NOTCH RESOLUTION AND MESH ADEQUACY
+   shaft root fillet r2=0.250 : arc length pi*r/2 = 0.3927 mm on 6 edges
+   elements across the fillet arc: min 6.0  max 6.0  (element size ~0.0654 mm)
+   local refinement: band +-1.5000 mm PARTITIONED around each keyway root
+   corner, so the notch element is small in BOTH in-plane directions.
+   In-plane target 0.0654 mm vs global shaft seed 2.5000 mm: the notch
+   elements stay about 38 times longer ALONG the keyway, which is
+   the direction of the smallest stress gradient in torsion. Set
+   notch.axial_factor > 0 to refine that direction too.
+   [ok] at least 4 elements on the notch arc.
+   model degrees of freedom (3 per node) = 3.287e+05
+   reference [1]: the stress was considered converged at DOF >= 4.4e+06
+   ratio DOF / DOF_converged[1] = 0.075
+   [NOTE] this mesh is below the refinement at which [1] reported
+          convergence (their case: d=100 mm, quadratic tets, contact).
+          The comparison is order-of-magnitude only. Use the mesh
+          convergence study (study.enabled) before quoting a Kt.
+
+DESIGN CHECK  (analytical, not from a solved analysis)
+   torque: T_nom=200.0 N m   T_max=200.0 N m   keys=1   load distribution phi=1.00
+   plain-shaft section modulus Wt = pi*D^3/16 = 12566.4 mm^3
+   nominal torsional stress tau_nom = T/Wt = 15.92 MPa
+   -- peak stress ESTIMATES using published SCFs (reference [1]) --
+      shaft: Kts=2.93 -> tau_max ~ 46.63 MPa
+      hub  : Kts=3.90 -> tau_max ~ 62.07 MPa
+      [1] full 3D WITH CONTACT, standard DIN design: KvM = 22.3 (converged).
+      [1] super-elliptic keyway, exponent eta=3.1: KvM = 5.9 in its 2D
+      contact model, which [1] reports as a 67% reduction versus the DIN
+      design in the SAME 2D model (do not divide 5.9 by the 3D 22.3 -
+      they are different models). Its unsymmetrical optimum reached 78%,
+      confirmed in 3D. Reshaping the keyway is therefore the single most
+      effective measure available for this joint.
+   -- surface pressure, DIN 6892 style [4] --
+      bearing height, shaft side  h' = t1 - c     = 4.200 mm
+      bearing height, hub side    h' = h - t1 - c = 2.200 mm
+      bearing length (Form A)     l_tr           = 38.000 mm
+      p_shaft = 2*T_max*phi/(D*h'*l_tr*n) = 62.7 MPa   (allowable 430.0)
+      p_hub                                = 119.6 MPa   (allowable 430.0)
+      utilisation shaft = 0.146  [ok]
+      utilisation hub   = 0.278  [ok]
+      transmissible torque at the allowable pressure:
+         shaft side 1372.6 N m | hub side 719.0 N m | governing 719.0 N m
+   -- failure mode expectation, reference [2] --
+      d/D1 = d_i/d_a = 0.500  (threshold 0.70)
+      thick-walled hub: [2] finds the failure always in the contact
+      between key and SHAFT keyway. Watch the shaft keyway flank.
+      [2] also finds the governing criterion depends on shaft strength:
+      low-strength steel fails by permissible pressure (plastic keyway
+      deformation), higher-strength steel by a crack at the shaft with no
+      prior relevant plastic deformation. Both are covered by DIN 6892
+      and DIN 743 respectively.
+      [3] adds: with an unchamfered key the peak shear sits at the keyway
+      END; doubling hub and key length lowered peak stress by ~25%, and
+      preventing contact at the keyway end lowered it by ~11%.
+
+VERDICT: OK (all parts meshed, failed=0, single component, fits ok)
+NOTE: NOJOB model - no contact, step, load, BC or job defined. Every stress
+      figure above is either a hand formula or a published reference value;
+      none of them comes from a solved analysis of this model.
+      Set analysis.enabled = true to add contact, a torsion step and a job.
+
+REFERENCES
+   [1] N. L. Pedersen, "Stress concentrations in keyways and optimization of keyway design", J. Strain Analysis for Engineering Design 45(8), 593-604, 2010.
+   [2] F. Kresinsky, E. Leidich, A. Hasse, "Different Failure Mechanisms in Keyed Shaft-Hub Connections under Dynamic Torque Load", ICSI 2019, TU Chemnitz.
+   [3] M. Eissa, H. Fessler, "Reduction of elastic stress concentrations in end-milled keyed connections", Experimental Mechanics 23, 401-408, 1983.
+   [4] DIN 6892 (parallel key strength) and DIN 743 (shaft fatigue / notch effect).
+   [5] DIN 6885-1 (parallel keys, dimensions and tolerances).

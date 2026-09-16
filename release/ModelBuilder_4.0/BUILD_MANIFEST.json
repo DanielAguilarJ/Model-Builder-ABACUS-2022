@@ -1,0 +1,61 @@
+{
+  "build_environment": {
+    "platform": "Windows-10-10.0.14393-SP0",
+    "pyinstaller": "6.22.2",
+    "python": "3.12.0",
+    "python_architecture": "64bit",
+    "source_revision": "unrecorded"
+  },
+  "created_at_utc": "2026-09-10T15:01:55+00:00",
+  "distribution_policy": {
+    "abaqus_and_latex_not_bundled": true,
+    "historical_dist_not_modified": true,
+    "licensed_din_fva_documents_not_bundled": true,
+    "whitelist_only": true
+  },
+  "files": [
+    {
+      "path": "ModelBuilder.exe",
+      "sha256": "47d22b438ef7a68227d49d1eccb933eb61dec9b936880b6a34e9d07472eb2fca",
+      "size_bytes": 11504857
+    },
+    {
+      "path": "params_default.json",
+      "sha256": "c8befbeed9c6096fc034ebd9a6d31934c400deca157b9a58142425e5b0bb9f7f",
+      "size_bytes": 3422
+    },
+    {
+      "path": "params_fva600_research_presolve_1lw.json",
+      "sha256": "9fb2939894b400758582fc1a5c0144264819a709df3861a9fa2f4f347ee78b69",
+      "size_bytes": 1114
+    },
+    {
+      "path": "README.md",
+      "sha256": "9327bb092a5682dd2f4a146bebc969fec86782e6a98a006008d575e4562583aa",
+      "size_bytes": 13144
+    },
+    {
+      "path": "technical_contract.json",
+      "sha256": "912d3540af609e2f14f58c8f3957439b02c3b7c9f5132e6e32c84bdd1c908d6b",
+      "size_bytes": 4202
+    },
+    {
+      "path": "TECHNICAL_TRACEABILITY.md",
+      "sha256": "151e2e6b4a91957086e15a2c0a947418663f3349d5749e96c58787171a243bba",
+      "size_bytes": 6774
+    }
+  ],
+  "manifest_schema": 1,
+  "parameter_schema": 4,
+  "product": "Model Builder",
+  "product_version": "4.0",
+  "validation": {
+    "abaqus_integration": "Not executed by make_release.py; the v4 README records the separate Abaqus 2022 end-to-end QA run and its limitations",
+    "packaged_self_test": {
+      "elapsed_seconds": 10.705,
+      "return_code": 0,
+      "scope": "Packaged resources, DIN table cardinality, default derivation and core validation; does not start Abaqus or compile LaTeX",
+      "status": "passed"
+    }
+  }
+}

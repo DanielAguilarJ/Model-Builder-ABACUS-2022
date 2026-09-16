@@ -1,0 +1,118 @@
+{
+  "contract_version": 2,
+  "builder_version": "4.0",
+  "builder_schema": 4,
+  "purpose": "Traceable contract for automated shaft-hub-key models",
+  "evidence_badges": [
+    "NORMATIVE",
+    "FVA-RESEARCH",
+    "LITERATURE",
+    "CORE-SCREENING",
+    "USER-OVERRIDE"
+  ],
+  "distribution_policy": {
+    "release_by_whitelist": true,
+    "mandatory_companions": [
+      "README.md",
+      "TECHNICAL_TRACEABILITY.md",
+      "technical_contract.json",
+      "BUILD_MANIFEST.json",
+      "SHA256SUMS.txt"
+    ],
+    "excluded_content": [
+      "licensed DIN/FVA source PDFs",
+      "protected standard figures",
+      "Abaqus CAE/ODB/solver and replay files",
+      "run-specific audits"
+    ]
+  },
+  "sources": [
+    {
+      "id": "DIN6885_DIMENSIONS",
+      "badge": "NORMATIVE",
+      "reference": "DIN 6885-1:2021-11",
+      "implemented_scope": "Derived dimensions for 6 < d1 <= 500 mm, standard lengths, r1/r2 ranges and forms A/B/AB",
+      "copyright_policy": "The source document and protected figures are not distributed"
+    },
+    {
+      "id": "DIN6892_SCREENING",
+      "badge": "CORE-SCREENING",
+      "reference": "DIN 6892 terminology",
+      "implemented_scope": "Uniform-bearing pressure sanity check",
+      "limitation": "Not complete Method B; licensed official tables and curves are required before that claim is allowed"
+    },
+    {
+      "id": "FVA600_III",
+      "badge": "FVA-RESEARCH",
+      "reference": "FVA 600 III research report, 2025",
+      "implemented_scope": "Pre-solve setup, supplied research formulas and v_crit = 0.5",
+      "limitation": "Research proposal, not a current DIN edition; one LW is regression only, not complete Method A"
+    },
+    {
+      "id": "PUBLISHED_COMPARISONS",
+      "badge": "LITERATURE",
+      "reference": "Pedersen; Kresinsky et al.; supplied literature",
+      "implemented_scope": "Comparison and mesh-planning information",
+      "limitation": "Never used as an acceptance criterion"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-DIN-001",
+      "statement": "Reject normative DIN 6885 selection outside 6 < d1 <= 500 mm",
+      "implemented_by": "keyjoint_core.din6885_row"
+    },
+    {
+      "id": "REQ-DIN-002",
+      "statement": "Use one 26-band source for b, h, t1, t2, +tol(t1), d2_add and r1/r2 ranges",
+      "implemented_by": "keyjoint_core.DIN6885 and DIN6885_RADII"
+    },
+    {
+      "id": "REQ-DIN-003",
+      "statement": "Do not select a standard length when no listed length fits",
+      "implemented_by": "keyjoint_core.nearest_standard_length"
+    },
+    {
+      "id": "REQ-GEO-001",
+      "statement": "Keep key_nominal_length, slot_total_length and load_bearing_length distinct",
+      "implemented_by": "keyjoint_core.derive"
+    },
+    {
+      "id": "REQ-GEO-002",
+      "statement": "Implement exact forms A, B and AB without first-character truncation",
+      "implemented_by": "keyjoint_core.normalize_key_form and Abaqus geometry backend"
+    },
+    {
+      "id": "REQ-GEO-003",
+      "statement": "Treat forms C-J and groove forms N2/N3 as unavailable until their required geometry and licensed dimensions are implemented",
+      "implemented_by": "keyjoint_core validation"
+    },
+    {
+      "id": "REQ-SEM-001",
+      "statement": "Use hub_outer_over_shaft and shaft_over_hub instead of ambiguous QA",
+      "implemented_by": "keyjoint_core.derive"
+    },
+    {
+      "id": "REQ-TRACE-001",
+      "statement": "Every report result must retain an evidence badge",
+      "implemented_by": "audit JSON and dynamic report generator"
+    },
+    {
+      "id": "REQ-FVA-001",
+      "statement": "Use v = DeltaV/V_theo and v_crit = 0.5 only under FVA-RESEARCH",
+      "implemented_by": "keyjoint_core.fva600_relative_opening_volume"
+    },
+    {
+      "id": "REQ-FVA-002",
+      "statement": "Label the one-cycle NOJOB workflow as pre-solve/regression, not complete Method A",
+      "implemented_by": "FVA preset, audit and GUI"
+    }
+  ],
+  "supported_geometry": {
+    "key_forms": ["A", "B", "AB"],
+    "reference_only_key_forms": ["C", "D", "E", "F", "G", "H", "J"],
+    "groove_forms": ["N1"],
+    "reference_only_groove_forms": ["N2", "N3"],
+    "maximum_functional_roughness_Rz_um": 16
+  }
+}

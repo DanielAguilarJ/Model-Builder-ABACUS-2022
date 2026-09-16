@@ -1,0 +1,969 @@
+# -*- coding: mbcs -*-
+from mesh import *
+mdb.Model(name='PARAM_MODEL')
+mdb.models['PARAM_MODEL'].Material(name='C45N')
+mdb.models['PARAM_MODEL'].materials['C45N'].Elastic(table=((210000.0, 0.3), ))
+mdb.models['PARAM_MODEL'].materials['C45N'].Density(table=((7.85e-09, ), ))
+mdb.models['PARAM_MODEL'].Material(name='C45QT_KEY')
+mdb.models['PARAM_MODEL'].materials['C45QT_KEY'].Elastic(table=((210000.0, 
+    0.3), ))
+mdb.models['PARAM_MODEL'].materials['C45QT_KEY'].Density(table=((7.85e-09, ), 
+    ))
+mdb.models['PARAM_MODEL'].HomogeneousSolidSection(material='C45N', name=
+    'C45N_SECTION', thickness=None)
+mdb.models['PARAM_MODEL'].HomogeneousSolidSection(material='C45QT_KEY', name=
+    'C45QT_KEY_SECTION', thickness=None)
+mdb.models['PARAM_MODEL'].ConstrainedSketch(name='__cyl__', sheetSize=200.0)
+mdb.models['PARAM_MODEL'].sketches['__cyl__'].CircleByCenterPerimeter(center=(
+    0.0, 0.0), point1=(25.0, 0.0))
+mdb.models['PARAM_MODEL'].Part(dimensionality=THREE_D, name='__BLANK__', type=
+    DEFORMABLE_BODY)
+mdb.models['PARAM_MODEL'].parts['__BLANK__'].BaseSolidExtrude(depth=120.0, 
+    sketch=mdb.models['PARAM_MODEL'].sketches['__cyl__'])
+del mdb.models['PARAM_MODEL'].sketches['__cyl__']
+mdb.models['PARAM_MODEL'].ConstrainedSketch(name='__cap__', sheetSize=200.0)
+mdb.models['PARAM_MODEL'].sketches['__cap__'].Line(point1=(-6.0, 17.0), point2=
+    (-6.0, 55.0))
+mdb.models['PARAM_MODEL'].sketches['__cap__'].Line(point1=(6.0, 17.0), point2=(
+    6.0, 55.0))
+mdb.models['PARAM_MODEL'].sketches['__cap__'].ArcByCenterEnds(center=(0.0, 
+    55.0), direction=COUNTERCLOCKWISE, point1=(6.0, 55.0), point2=(-6.0, 55.0))
+mdb.models['PARAM_MODEL'].sketches['__cap__'].ArcByCenterEnds(center=(0.0, 
+    17.0), direction=COUNTERCLOCKWISE, point1=(-6.0, 17.0), point2=(6.0, 17.0))
+mdb.models['PARAM_MODEL'].Part(dimensionality=THREE_D, name='__CUTTER__', type=
+    DEFORMABLE_BODY)
+mdb.models['PARAM_MODEL'].parts['__CUTTER__'].BaseSolidExtrude(depth=50.0, 
+    sketch=mdb.models['PARAM_MODEL'].sketches['__cap__'])
+del mdb.models['PARAM_MODEL'].sketches['__cap__']
+mdb.models['PARAM_MODEL'].rootAssembly.DatumCsysByDefault(CARTESIAN)
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='__B__', 
+    part=mdb.models['PARAM_MODEL'].parts['__BLANK__'])
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='__C__', 
+    part=mdb.models['PARAM_MODEL'].parts['__CUTTER__'])
+mdb.models['PARAM_MODEL'].rootAssembly.rotate(angle=90.0, axisDirection=(1.0, 
+    0.0, 0.0), axisPoint=(0.0, 0.0, 0.0), instanceList=('__C__', ))
+mdb.models['PARAM_MODEL'].rootAssembly.translate(instanceList=('__C__', ), 
+    vector=(0.0, 70.0, 0.0))
+mdb.models['PARAM_MODEL'].rootAssembly.InstanceFromBooleanCut(cuttingInstances=
+    (mdb.models['PARAM_MODEL'].rootAssembly.instances['__C__'], ), 
+    instanceToBeCut=mdb.models['PARAM_MODEL'].rootAssembly.instances['__B__'], 
+    name='Shaft', originalInstances=DELETE)
+del mdb.models['PARAM_MODEL'].parts['__BLANK__']
+del mdb.models['PARAM_MODEL'].parts['__CUTTER__']
+del mdb.models['PARAM_MODEL'].rootAssembly.instances['Shaft-1']
+mdb.models['PARAM_MODEL'].parts['Shaft'].Round(edgeList=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].edges[2], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].edges[5], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].edges[8], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].edges[11]), radius=0.25)
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=17.0
+    , principalPlane=XYPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[0]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[3])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=55.0
+    , principalPlane=XYPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[0]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[5])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=11.0
+    , principalPlane=XYPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[2]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[7])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=61.0
+    , principalPlane=XYPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[2]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[9])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=0.0, 
+    principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[0], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[1], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[2], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[3], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[4]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[11])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=6.0, 
+    principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[4], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[5], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[6], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[7], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[8]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[13])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=-6.0
+    , principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[9], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[10], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[11], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[12], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[14]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[15])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=20.0
+    , principalPlane=XZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[0], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[1], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[2], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[3], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[4], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[5], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[6], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[7], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[8], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[9], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[10], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[11], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[12], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[13], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[14], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[15], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[16], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[17], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[18], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[19]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[17])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=
+    11.25, principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[5], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[6], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[7], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[16], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[18], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[24], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[25], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[26], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[35], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[37]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[19])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=
+    -11.25, principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[27], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[28], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[29], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[30], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[41], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[42], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[43], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[44], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[48], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[49]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[21])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=
+    11.25, principalPlane=XZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[0], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[1], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[2], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[3], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[9], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[10], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[11], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[12], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[18], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[24], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[25], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[26], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[27], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[33], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[34], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[35], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[36], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[37], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[38], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[39], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[40], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[41], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[42], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[43], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[44], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[45], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[46], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[47], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[48], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[49]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[23])
+mdb.models['PARAM_MODEL'].parts['Shaft'].DatumPlaneByPrincipalPlane(offset=
+    -11.25, principalPlane=XZPLANE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Shaft'].cells[0], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[1], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[2], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[3], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[4], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[5], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[6], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[7], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[8], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[9], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[10], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[11], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[12], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[13], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[14], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[15], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[16], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[17], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[18], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[19], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[20], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[21], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[22], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[23], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[24], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[25], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[26], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[27], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[28], 
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[59]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].datums[25])
+mdb.models['PARAM_MODEL'].ConstrainedSketch(name='__key__', sheetSize=240.0)
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(-5.2, 20.0), point2=
+    (5.2, 20.0))
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(5.2, 20.0), point2=(
+    6.0, 20.8))
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(6.0, 20.8), point2=(
+    6.0, 27.2))
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(6.0, 27.2), point2=(
+    5.2, 28.0))
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(5.2, 28.0), point2=(
+    -5.2, 28.0))
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(-5.2, 28.0), point2=
+    (-6.0, 27.2))
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(-6.0, 27.2), point2=
+    (-6.0, 20.8))
+mdb.models['PARAM_MODEL'].sketches['__key__'].Line(point1=(-6.0, 20.8), point2=
+    (-5.2, 20.0))
+mdb.models['PARAM_MODEL'].Part(dimensionality=THREE_D, name='Key', type=
+    DEFORMABLE_BODY)
+mdb.models['PARAM_MODEL'].parts['Key'].BaseSolidExtrude(depth=38.0, sketch=
+    mdb.models['PARAM_MODEL'].sketches['__key__'])
+del mdb.models['PARAM_MODEL'].sketches['__key__']
+mdb.models['PARAM_MODEL'].parts['Key'].DatumPlaneByPrincipalPlane(offset=20.8, 
+    principalPlane=XZPLANE)
+mdb.models['PARAM_MODEL'].parts['Key'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Key'].cells[0]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Key'].datums[2])
+mdb.models['PARAM_MODEL'].parts['Key'].DatumPlaneByPrincipalPlane(offset=27.2, 
+    principalPlane=XZPLANE)
+mdb.models['PARAM_MODEL'].parts['Key'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Key'].cells[1]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Key'].datums[4])
+mdb.models['PARAM_MODEL'].parts['Key'].DatumPlaneByPrincipalPlane(offset=0.0, 
+    principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Key'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Key'].cells[0], 
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[1], 
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[2]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Key'].datums[6])
+mdb.models['PARAM_MODEL'].parts['Key'].DatumPlaneByPrincipalPlane(offset=5.2, 
+    principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Key'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Key'].cells[2], 
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[3], 
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[4]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Key'].datums[8])
+mdb.models['PARAM_MODEL'].parts['Key'].DatumPlaneByPrincipalPlane(offset=-5.2, 
+    principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Key'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Key'].cells[5], 
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[6], 
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[8]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Key'].datums[10])
+mdb.models['PARAM_MODEL'].ConstrainedSketch(name='__ann__', sheetSize=760.0)
+mdb.models['PARAM_MODEL'].sketches['__ann__'].ConstructionLine(point1=(0.0, 
+    0.0), point2=(0.0, 1.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].assignCenterline(line=
+    mdb.models['PARAM_MODEL'].sketches['__ann__'].geometry[2])
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(20.0, 0.0), point2=(
+    30.0, 0.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(30.0, 0.0), point2=(
+    31.9, 38.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(31.9, 38.0), point2=
+    (20.0, 38.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(20.0, 38.0), point2=
+    (20.0, 0.0))
+mdb.models['PARAM_MODEL'].Part(dimensionality=THREE_D, name='Bushing', type=
+    DEFORMABLE_BODY)
+mdb.models['PARAM_MODEL'].parts['Bushing'].BaseSolidRevolve(angle=360.0, 
+    flipRevolveDirection=OFF, sketch=
+    mdb.models['PARAM_MODEL'].sketches['__ann__'])
+del mdb.models['PARAM_MODEL'].sketches['__ann__']
+mdb.models['PARAM_MODEL'].ConstrainedSketch(name='__grv__', sheetSize=638.0)
+mdb.models['PARAM_MODEL'].sketches['__grv__'].rectangle(point1=(-6.01075, 0.0), 
+    point2=(6.01075, 38.0))
+mdb.models['PARAM_MODEL'].Part(dimensionality=THREE_D, name='__GRV__', type=
+    DEFORMABLE_BODY)
+mdb.models['PARAM_MODEL'].parts['__GRV__'].BaseSolidExtrude(depth=23.3, sketch=
+    mdb.models['PARAM_MODEL'].sketches['__grv__'])
+del mdb.models['PARAM_MODEL'].sketches['__grv__']
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='__BU__', 
+    part=mdb.models['PARAM_MODEL'].parts['Bushing'])
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='__GV__', 
+    part=mdb.models['PARAM_MODEL'].parts['__GRV__'])
+mdb.models['PARAM_MODEL'].rootAssembly.InstanceFromBooleanCut(cuttingInstances=
+    (mdb.models['PARAM_MODEL'].rootAssembly.instances['__GV__'], ), 
+    instanceToBeCut=mdb.models['PARAM_MODEL'].rootAssembly.instances['__BU__'], 
+    name='__BU_CUT__', originalInstances=DELETE)
+del mdb.models['PARAM_MODEL'].parts['__GRV__']
+del mdb.models['PARAM_MODEL'].parts['Bushing']
+mdb.models['PARAM_MODEL'].parts.changeKey(fromName='__BU_CUT__', toName=
+    'Bushing')
+del mdb.models['PARAM_MODEL'].rootAssembly.instances['__BU_CUT__-1']
+mdb.models['PARAM_MODEL'].parts['Bushing'].DatumPlaneByPrincipalPlane(offset=
+    0.0, principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Bushing'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Bushing'].cells[0]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Bushing'].datums[2])
+mdb.models['PARAM_MODEL'].parts['Bushing'].DatumPlaneByPrincipalPlane(offset=
+    6.01075, principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Bushing'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Bushing'].cells[0]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Bushing'].datums[4])
+mdb.models['PARAM_MODEL'].parts['Bushing'].DatumPlaneByPrincipalPlane(offset=
+    -6.01075, principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Bushing'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Bushing'].cells[3]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Bushing'].datums[6])
+mdb.models['PARAM_MODEL'].parts['Bushing'].DatumPlaneByPrincipalPlane(offset=
+    0.0, principalPlane=XYPLANE)
+mdb.models['PARAM_MODEL'].parts['Bushing'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Bushing'].cells[1], 
+    mdb.models['PARAM_MODEL'].parts['Bushing'].cells[4]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Bushing'].datums[8])
+mdb.models['PARAM_MODEL'].parts['Bushing'].DatumPlaneByPrincipalPlane(offset=
+    20.0, principalPlane=XYPLANE)
+mdb.models['PARAM_MODEL'].parts['Bushing'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Bushing'].cells[3], 
+    mdb.models['PARAM_MODEL'].parts['Bushing'].cells[6]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Bushing'].datums[10])
+mdb.models['PARAM_MODEL'].ConstrainedSketch(name='__ann__', sheetSize=800.0)
+mdb.models['PARAM_MODEL'].sketches['__ann__'].ConstructionLine(point1=(0.0, 
+    0.0), point2=(0.0, 1.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].assignCenterline(line=
+    mdb.models['PARAM_MODEL'].sketches['__ann__'].geometry[2])
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(30.0, 0.0), point2=(
+    40.0, 0.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(40.0, 0.0), point2=(
+    40.0, 38.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(40.0, 38.0), point2=
+    (31.9, 38.0))
+mdb.models['PARAM_MODEL'].sketches['__ann__'].Line(point1=(31.9, 38.0), point2=
+    (30.0, 0.0))
+mdb.models['PARAM_MODEL'].Part(dimensionality=THREE_D, name='Hub', type=
+    DEFORMABLE_BODY)
+mdb.models['PARAM_MODEL'].parts['Hub'].BaseSolidRevolve(angle=360.0, 
+    flipRevolveDirection=OFF, sketch=
+    mdb.models['PARAM_MODEL'].sketches['__ann__'])
+del mdb.models['PARAM_MODEL'].sketches['__ann__']
+mdb.models['PARAM_MODEL'].parts['Hub'].DatumPlaneByPrincipalPlane(offset=0.0, 
+    principalPlane=YZPLANE)
+mdb.models['PARAM_MODEL'].parts['Hub'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Hub'].cells[0]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Hub'].datums[2])
+mdb.models['PARAM_MODEL'].parts['Hub'].DatumPlaneByPrincipalPlane(offset=0.0, 
+    principalPlane=XYPLANE)
+mdb.models['PARAM_MODEL'].parts['Hub'].PartitionCellByDatumPlane(cells=
+    [mdb.models['PARAM_MODEL'].parts['Hub'].cells[0], 
+    mdb.models['PARAM_MODEL'].parts['Hub'].cells[1]], datumPlane=
+    mdb.models['PARAM_MODEL'].parts['Hub'].datums[4])
+mdb.models['PARAM_MODEL'].parts['Shaft'].SectionAssignment(offset=0.0, 
+    offsetField='', offsetType=MIDDLE_SURFACE, region=Region(
+    cells=mdb.models['PARAM_MODEL'].parts['Shaft'].cells.getSequenceFromMask(
+    mask=('[#ffffffff:3 #ffffff ]', ), )), sectionName='C45N_SECTION', 
+    thicknessAssignment=FROM_SECTION)
+mdb.models['PARAM_MODEL'].parts['Key'].SectionAssignment(offset=0.0, 
+    offsetField='', offsetType=MIDDLE_SURFACE, region=Region(
+    cells=mdb.models['PARAM_MODEL'].parts['Key'].cells.getSequenceFromMask(
+    mask=('[#fff ]', ), )), sectionName='C45QT_KEY_SECTION', 
+    thicknessAssignment=FROM_SECTION)
+mdb.models['PARAM_MODEL'].parts['Bushing'].SectionAssignment(offset=0.0, 
+    offsetField='', offsetType=MIDDLE_SURFACE, region=Region(
+    cells=mdb.models['PARAM_MODEL'].parts['Bushing'].cells.getSequenceFromMask(
+    mask=('[#3ff ]', ), )), sectionName='C45N_SECTION', thicknessAssignment=
+    FROM_SECTION)
+mdb.models['PARAM_MODEL'].parts['Hub'].SectionAssignment(offset=0.0, 
+    offsetField='', offsetType=MIDDLE_SURFACE, region=Region(
+    cells=mdb.models['PARAM_MODEL'].parts['Hub'].cells.getSequenceFromMask(
+    mask=('[#f ]', ), )), sectionName='C45N_SECTION', thicknessAssignment=
+    FROM_SECTION)
+mdb.models['PARAM_MODEL'].parts['Shaft'].deleteMesh()
+mdb.models['PARAM_MODEL'].parts['Shaft'].deleteSeeds(regions=
+    mdb.models['PARAM_MODEL'].parts['Shaft'].edges)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[0], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[1], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[2], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[3], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[4], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[5], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[6], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[7], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[8], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[9], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[10], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[11], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[12], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[13], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[14], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[15], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[16], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[17], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[18], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[19], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[20], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[21], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[22], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[23], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[24], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[25], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[26], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[27], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[28], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[29], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[30], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[31], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[32], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[33], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[34], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[35], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[36], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[37], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[38], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[39], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[40], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[41], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[42], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[43], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[44], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[45], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[46], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[47], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[48], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[49], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[50], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[51], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[52], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[53], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[54], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[55], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[56], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[57], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[58], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[59], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[60], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[61], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[62], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[63], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[64], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[65], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[66], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[67], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[68], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[69], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[70], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[71], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[72], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[73], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[74], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[75], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[76], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[77], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[77], 
+    ), technique=SWEEP)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[78], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[79], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[80], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[81], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[82], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[83], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[83], 
+    ), technique=SWEEP)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[84], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[85], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[85], 
+    ), technique=SWEEP)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[86], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[87], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[87], 
+    ), technique=SWEEP)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[88], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[89], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[90], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[91], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[92], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[93], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[94], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[95], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[96], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[97], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[98], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[99], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[100], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[101], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[102], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[103], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[104], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[105], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[106], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[107], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[108], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[109], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[110], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[110], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=
+    ADVANCING_FRONT, elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[110], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=TET, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[110], ), technique=
+    FREE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[111], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[111], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=
+    ADVANCING_FRONT, elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[111], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=TET, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[111], ), technique=
+    FREE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[112], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[113], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[113], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=
+    ADVANCING_FRONT, elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[113], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=TET, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[113], ), technique=
+    FREE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[114], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[115], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[116], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[117], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[118], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=MEDIAL_AXIS, 
+    elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[118], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(algorithm=
+    ADVANCING_FRONT, elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells[118], ), technique=SWEEP)
+#* Error: Some regions cannot be Swept/Revolved.
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=TET, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[118], ), technique=
+    FREE)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Shaft'].cells[119], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Shaft'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=1.2)
+mdb.models['PARAM_MODEL'].parts['Shaft'].setElementType(elemTypes=(ElemType(
+    elemCode=C3D20R, elemLibrary=STANDARD), ElemType(elemCode=C3D10M, 
+    elemLibrary=STANDARD)), regions=(
+    mdb.models['PARAM_MODEL'].parts['Shaft'].cells, ))
+mdb.models['PARAM_MODEL'].parts['Shaft'].generateMesh()
+mdb.models['PARAM_MODEL'].parts['Key'].deleteMesh()
+mdb.models['PARAM_MODEL'].parts['Key'].deleteSeeds(regions=
+    mdb.models['PARAM_MODEL'].parts['Key'].edges)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[0], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[1], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[2], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[3], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[4], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[5], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[6], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[7], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[8], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[9], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[10], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells[11], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Key'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=0.48)
+mdb.models['PARAM_MODEL'].parts['Key'].setElementType(elemTypes=(ElemType(
+    elemCode=C3D20R, elemLibrary=STANDARD), ElemType(elemCode=C3D10M, 
+    elemLibrary=STANDARD)), regions=(
+    mdb.models['PARAM_MODEL'].parts['Key'].cells, ))
+mdb.models['PARAM_MODEL'].parts['Key'].generateMesh()
+mdb.models['PARAM_MODEL'].parts['Bushing'].deleteMesh()
+mdb.models['PARAM_MODEL'].parts['Bushing'].deleteSeeds(regions=
+    mdb.models['PARAM_MODEL'].parts['Bushing'].edges)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[0], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(algorithm=
+    MEDIAL_AXIS, elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Bushing'].cells[0], ), technique=SWEEP)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[1], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[2], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[3], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[4], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[5], ), technique=
+    STRUCTURED)
+#* Error: Some regions cannot be Mapped.
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(algorithm=
+    MEDIAL_AXIS, elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Bushing'].cells[5], ), technique=SWEEP)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[6], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[7], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[8], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setMeshControls(elemShape=HEX, 
+    regions=(mdb.models['PARAM_MODEL'].parts['Bushing'].cells[9], ), technique=
+    STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Bushing'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=0.9)
+mdb.models['PARAM_MODEL'].parts['Bushing'].setElementType(elemTypes=(ElemType(
+    elemCode=C3D20R, elemLibrary=STANDARD), ElemType(elemCode=C3D10M, 
+    elemLibrary=STANDARD)), regions=(
+    mdb.models['PARAM_MODEL'].parts['Bushing'].cells, ))
+mdb.models['PARAM_MODEL'].parts['Bushing'].generateMesh()
+mdb.models['PARAM_MODEL'].parts['Hub'].deleteMesh()
+mdb.models['PARAM_MODEL'].parts['Hub'].deleteSeeds(regions=
+    mdb.models['PARAM_MODEL'].parts['Hub'].edges)
+mdb.models['PARAM_MODEL'].parts['Hub'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Hub'].cells[0], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Hub'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Hub'].cells[1], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Hub'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Hub'].cells[2], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Hub'].setMeshControls(elemShape=HEX, regions=(
+    mdb.models['PARAM_MODEL'].parts['Hub'].cells[3], ), technique=STRUCTURED)
+mdb.models['PARAM_MODEL'].parts['Hub'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=1.0)
+mdb.models['PARAM_MODEL'].parts['Hub'].setElementType(elemTypes=(ElemType(
+    elemCode=C3D20R, elemLibrary=STANDARD), ElemType(elemCode=C3D10M, 
+    elemLibrary=STANDARD)), regions=(
+    mdb.models['PARAM_MODEL'].parts['Hub'].cells, ))
+mdb.models['PARAM_MODEL'].parts['Hub'].generateMesh()
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='SHAFT-1', 
+    part=mdb.models['PARAM_MODEL'].parts['Shaft'])
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='KEY-1', 
+    part=mdb.models['PARAM_MODEL'].parts['Key'])
+mdb.models['PARAM_MODEL'].rootAssembly.translate(instanceList=('KEY-1', ), 
+    vector=(0.0, 0.0, 17.0))
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='BUSHING-1', 
+    part=mdb.models['PARAM_MODEL'].parts['Bushing'])
+mdb.models['PARAM_MODEL'].rootAssembly.Instance(dependent=ON, name='HUB-1', 
+    part=mdb.models['PARAM_MODEL'].parts['Hub'])
+mdb.models['PARAM_MODEL'].rootAssembly.rotate(angle=-90.0, axisDirection=(1.0, 
+    0.0, 0.0), axisPoint=(0.0, 0.0, 0.0), instanceList=('BUSHING-1', ))
+mdb.models['PARAM_MODEL'].rootAssembly.rotate(angle=-90.0, axisDirection=(1.0, 
+    0.0, 0.0), axisPoint=(0.0, 0.0, 0.0), instanceList=('HUB-1', ))
+mdb.models['PARAM_MODEL'].rootAssembly.translate(instanceList=('BUSHING-1', ), 
+    vector=(0.0, 0.0, 55.0))
+mdb.models['PARAM_MODEL'].rootAssembly.translate(instanceList=('HUB-1', ), 
+    vector=(0.0, 0.0, 55.0))
+mdb.models['PARAM_MODEL'].rootAssembly.regenerate()
+mdb.models['PARAM_MODEL'].rootAssembly.Set(name='ALL_SHAFT_NODES', nodes=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['SHAFT-1'].nodes)
+mdb.models['PARAM_MODEL'].rootAssembly.Set(elements=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['SHAFT-1'].elements, name=
+    'ALL_SHAFT_ELEMENTS')
+mdb.models['PARAM_MODEL'].rootAssembly.Set(name='ALL_KEY_NODES', nodes=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['KEY-1'].nodes)
+mdb.models['PARAM_MODEL'].rootAssembly.Set(elements=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['KEY-1'].elements, name=
+    'ALL_KEY_ELEMENTS')
+mdb.models['PARAM_MODEL'].rootAssembly.Set(name='ALL_BUSHING_NODES', nodes=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['BUSHING-1'].nodes)
+mdb.models['PARAM_MODEL'].rootAssembly.Set(elements=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['BUSHING-1'].elements, 
+    name='ALL_BUSHING_ELEMENTS')
+mdb.models['PARAM_MODEL'].rootAssembly.Set(name='ALL_HUB_NODES', nodes=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['HUB-1'].nodes)
+mdb.models['PARAM_MODEL'].rootAssembly.Set(elements=
+    mdb.models['PARAM_MODEL'].rootAssembly.instances['HUB-1'].elements, name=
+    'ALL_HUB_ELEMENTS')
+# Save by keag on 2026_08_28-15.19.19; build 2022 2021_09_15-19.57.30 176069

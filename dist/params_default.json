@@ -1,0 +1,134 @@
+{
+  "schema_version": 4,
+  "model_name": "PARAM_MODEL",
+  "output_dir": "",
+  "save_cae": true,
+  "make_preview": true,
+  "compliance_mode": "normative",
+  "key_form": "A",
+  "groove_form": "N1",
+  "hub_type": "cylindrical",
+  "element_order": "linear",
+  "linear_hex_code": "C3D8",
+  "ar_repair_threshold": 25.0,
+  "shaft": {
+    "D": 40.0,
+    "L_over_D": 3.0,
+    "dz": 38.0,
+    "z0_offset": 5.0,
+    "R_cap": 0.0,
+    "r2": 0.25,
+    "slot_clearance": 0.0,
+    "seed": 0.0
+  },
+  "key": {
+    "l": 0.0,
+    "c": 0.8,
+    "chamfer_angle": 45.0,
+    "snap_length_to_din": true,
+    "seed": 0.0
+  },
+  "hub": {
+    "L_hub": 38.0,
+    "hub_outer_over_shaft": 2.0,
+    "r1": 0.25,
+    "groove_clearance": 0.0215,
+    "seed": 0.0
+  },
+  "notch": {
+    "enabled": true,
+    "arc_elems": 6,
+    "band_factor": 6.0,
+    "method": "bias",
+    "arc_scope": "band",
+    "band_max_factor": 3.0,
+    "apply_to_hub": true,
+    "axial_factor": 0.0
+  },
+  "preview": {
+    "views": ["Iso", "Front", "Right"],
+    "notch_zoom": true,
+    "width": 1600,
+    "height": 1200
+  },
+  "audit": {
+    "text": true,
+    "json": true
+  },
+  "design_check": {
+    "enabled": true,
+    "evidence_badge": "CORE-SCREENING",
+    "method_label": "Uniform-bearing pressure screening (not DIN 6892 Method B)",
+    "T_nom": 200.0,
+    "T_max": 0.0,
+    "n_keys": 1,
+    "load_distribution": 1.0,
+    "p_perm_shaft": 0.0,
+    "p_perm_hub": 0.0
+  },
+  "analysis": {
+    "enabled": false,
+    "T_apply": 200.0,
+    "friction": 0.15,
+    "nlgeom": false,
+    "hold": "hub_outer",
+    "stabilize": true,
+    "max_num_inc": 200,
+    "initial_inc": 0.1,
+    "min_inc": 1e-8,
+    "create_job": false,
+    "submit": false,
+    "cpus": 1,
+    "post_process": true
+  },
+  "study": {
+    "enabled": false,
+    "seed_scales": [1.6, 1.2, 1.0, 0.8],
+    "csv": true
+  },
+  "bushing": {
+    "length": 38.0,
+    "outer_dia_small": 60.0,
+    "outer_dia_large": 63.8,
+    "seed": 0.9
+  },
+  "materials": {
+    "STEEL_SHAFT": {"grade": "C45", "E": 210000.0, "nu": 0.3, "rho": 7.85e-9, "Re": 430.0},
+    "STEEL_HUB": {"grade": "C45", "E": 210000.0, "nu": 0.3, "rho": 7.85e-9, "Re": 430.0},
+    "STEEL_KEY": {"grade": "C45", "E": 210000.0, "nu": 0.3, "rho": 7.85e-9, "Re": 430.0}
+  },
+  "fva_600_iii": {
+    "enabled": false,
+    "evidence_badge": "FVA-RESEARCH",
+    "backend": "d40_v3_refined_hex_nojob",
+    "workflow": "pre_solve_regression",
+    "method": "research_method_a_setup",
+    "is_complete_method_a": false,
+    "cycles": 1,
+    "method_a_min_cycles": 10,
+    "strict_no_job": true,
+    "recommended_safety_factor": 1.2,
+    "v_crit": 0.5,
+    "torque_Nm": 1256.0,
+    "density_tonne_per_mm3": 7.85e-9,
+    "contact": {
+      "interference_total_mm": 0.018,
+      "interference_per_flank_mm": 0.009,
+      "friction_fit": 0.0001,
+      "friction_service": 0.2,
+      "elastic_slip_mm": 0.001,
+      "normal_stiffness_N_per_mm3": 10000000.0
+    },
+    "steps": {
+      "contact_time_s": 1.0,
+      "contact_increment_s": 0.05,
+      "friction_time_s": 1.0,
+      "cycle_time_s": 2.0
+    },
+    "materials": {
+      "shaft": {"E_MPa": 187000.0, "nu": 0.3, "Re_MPa": 378.0, "Qinf_MPa": 32.74, "b_iso": 249.8, "C1_MPa": 15260.0, "gamma1": 50.8},
+      "hub": {"E_MPa": 196000.0, "nu": 0.3, "Re_MPa": 279.0743851, "Rm_MPa": 579.0, "K_prime_MPa": 955.0, "n_prime": 0.15, "intervals": 150},
+      "key": {"E_MPa": 210000.0, "nu": 0.3, "yield_MPa": 928.0}
+    }
+  }
+}

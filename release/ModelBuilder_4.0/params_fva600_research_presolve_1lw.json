@@ -1,0 +1,53 @@
+{
+  "schema_version": 4,
+  "model_name": "D40_FVA600_RESEARCH_PRESOLVE_1LW_NOJOB",
+  "output_dir": "",
+  "save_cae": true,
+  "make_preview": true,
+  "hub_type": "tapered",
+  "element_order": "quadratic",
+  "shaft": {
+    "D": 40.0,
+    "L_over_D": 3.0,
+    "dz": 38.0,
+    "z0_offset": 5.0,
+    "R_cap": 6.0,
+    "r2": 0.25
+  },
+  "key": {
+    "l": 38.0,
+    "snap_length_to_din": false
+  },
+  "hub": {
+    "L_hub": 38.0,
+    "hub_outer_over_shaft": 2.0,
+    "groove_clearance": 0.0215
+  },
+  "bushing": {
+    "length": 38.0,
+    "outer_dia_small": 60.0,
+    "outer_dia_large": 63.8
+  },
+  "analysis": {
+    "enabled": false,
+    "create_job": false,
+    "submit": false
+  },
+  "study": {
+    "enabled": false
+  },
+  "fva_600_iii": {
+    "enabled": true,
+    "evidence_badge": "FVA-RESEARCH",
+    "backend": "d40_v3_refined_hex_nojob",
+    "workflow": "pre_solve_regression",
+    "method": "research_method_a_setup",
+    "is_complete_method_a": false,
+    "cycles": 1,
+    "method_a_min_cycles": 10,
+    "strict_no_job": true,
+    "v_crit": 0.5,
+    "recommended_safety_factor": 1.2,
+    "torque_Nm": 1256.0
+  }
+}

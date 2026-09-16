@@ -1,0 +1,30 @@
+# UTF-8
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(4, 2, 0, 0),
+    prodvers=(4, 2, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo([
+      StringTable(
+        '040904B0',
+        [
+          StringStruct('CompanyName', 'Model Builder Project'),
+          StringStruct('FileDescription', 'Traceable DIN 6885/DIN 6892/FVA shaft-hub-key builder for Abaqus'),
+          StringStruct('FileVersion', '4.2.0.0'),
+          StringStruct('InternalName', 'ModelBuilder'),
+          StringStruct('OriginalFilename', 'ModelBuilder.exe'),
+          StringStruct('ProductName', 'Model Builder'),
+          StringStruct('ProductVersion', '4.2.0.0')
+        ]
+      )
+    ]),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)

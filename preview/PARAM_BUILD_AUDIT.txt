@@ -1,0 +1,35 @@
+PARAMETRIC BUILD AUDIT
+model: __FINAL_CHECK__
+element_order: quadratic
+steps=['Initial'] jobs=[] constraints=[] interactions=[]
+
+PART Shaft
+   nodes=346433 elements=85429 types={'C3D20R': 79520, 'C3D10M': 5909}
+   bbox_size=[40.0, 40.0, 120.0]
+   failed=0 warnings=1591 aspectRatio worst=16.2785987854 avg=1.44518756866 components=1
+PART Key
+   nodes=89560 elements=20538 types={'C3D20R': 20538}
+   bbox_size=[12.0, 8.0, 38.0]
+   failed=0 warnings=0 aspectRatio worst=3.19886040688 avg=1.27394783497 components=1
+PART Bushing
+   nodes=192142 elements=43584 types={'C3D20R': 43584}
+   bbox_size=[63.8, 38.0, 63.8]
+   failed=0 warnings=77 aspectRatio worst=4.49235725403 avg=1.26624369621 components=1
+PART Hub
+   nodes=182700 elements=40320 types={'C3D20R': 40320}
+   bbox_size=[80.0, 38.0, 80.0]
+   failed=0 warnings=0 aspectRatio worst=1.36425673962 avg=1.150400877 components=1
+
+TOTAL nodes=810835 elements=189871
+SETS: ['ALL_BUSHING_ELEMENTS', 'ALL_BUSHING_NODES', 'ALL_HUB_ELEMENTS', 'ALL_HUB_NODES', 'ALL_KEY_ELEMENTS', 'ALL_KEY_NODES', 'ALL_SHAFT_ELEMENTS', 'ALL_SHAFT_NODES']
+
+FIT / CLEARANCE CHECKS
+   shaft OD vs bushing bore          0.0000 mm  [ok] gap>=0 (0=line-to-line)
+   key base vs keyway floor          0.0000 mm  [ok] should be ~0
+   shaft keyway flank/side           0.0000 mm  [ok] >=0
+   bushing groove flank/side         0.0107 mm  [ok] >=0
+   key top vs groove roof            0.3000 mm  [ok] gap>=0
+   bushing OD vs hub bore (small)    0.0000 mm  [ok] >=0 (0=cone mate)
+
+VERDICT: OK (all parts meshed, failed=0, single component, fits ok)
+NOTE: NOJOB model - no contact, step, load, BC or job defined.

@@ -1,0 +1,51 @@
+# -*- coding: mbcs -*-
+#
+# Abaqus/CAE Release 2022 replay file
+# Internal Version: 2021_09_15-19.57.30 176069
+# Run by keag on Fri Aug 28 15:05:03 2026
+#
+
+# from driverUtils import executeOnCaeGraphicsStartup
+# executeOnCaeGraphicsStartup()
+#: Executing "onCaeGraphicsStartup()" in the site directory ...
+from abaqus import *
+from abaqusConstants import *
+session.Viewport(name='Viewport: 1', origin=(1.35156, 1.35), width=198.95, 
+    height=133.92)
+session.viewports['Viewport: 1'].makeCurrent()
+from driverUtils import executeOnCaeStartup
+executeOnCaeStartup()
+execfile(
+    'C:/simulations/D40_HEX_CONICAL_KRESINSKY_V1/parametric_builder/dist/build_parametric_model.py', 
+    __main__.__dict__)
+#: [params] loaded from C:\simulations\D40_HEX_CONICAL_KRESINSKY_V1\parametric_builder\dist\params.json
+#: The model "PARAM_MODEL" has been created.
+#: [build] shaft ...
+#: [build] key ...
+#: [build] bushing ...
+#: Warning: One or more instances of this part exists in the
+#: assembly. They have been modified to refer to the renamed part.
+#: Any assembly features and attributes that depend on the original
+#: instance may become invalid due to this operation. You may need
+#: to edit assembly attributes, sets, surfaces, and reference points.
+#: [build] hub ...
+#: [mesh] shaft ...
+#: [mesh] key ...
+#: [mesh] bushing ...
+#: [mesh] hub ...
+#: PARAMETRIC BUILD AUDIT
+#: model: PARAM_MODEL
+#: element_order: quadratic
+#* AttributeError: 'Model' object has no attribute 'constraints'
+#* File 
+#* "C:/simulations/D40_HEX_CONICAL_KRESINSKY_V1/parametric_builder/dist/build_parametric_model.py", 
+#* line 604, in <module>
+#*     main()
+#* File 
+#* "C:/simulations/D40_HEX_CONICAL_KRESINSKY_V1/parametric_builder/dist/build_parametric_model.py", 
+#* line 584, in main
+#*     ok = write_audit(m, report, params, out_dir)
+#* File 
+#* "C:/simulations/D40_HEX_CONICAL_KRESINSKY_V1/parametric_builder/dist/build_parametric_model.py", 
+#* line 531, in write_audit
+#*     list(m.constraints.keys()), list(m.interactions.keys())))

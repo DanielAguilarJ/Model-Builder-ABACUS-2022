@@ -1,0 +1,353 @@
+{
+  "analysis": {
+    "T_apply": 200.0,
+    "cpus": 1,
+    "create_job": true,
+    "enabled": false,
+    "friction": 0.15,
+    "hold": "hub_outer",
+    "initial_inc": 0.1,
+    "max_num_inc": 200,
+    "min_inc": 1e-08,
+    "nlgeom": false,
+    "post_process": true,
+    "stabilize": true,
+    "submit": false
+  },
+  "ar_repair_threshold": 25.0,
+  "audit": {
+    "json": true,
+    "text": true
+  },
+  "bushing": {
+    "length": 38.0,
+    "outer_dia_large": 63.8,
+    "outer_dia_small": 60.0,
+    "seed": 0.9
+  },
+  "compliance_mode": "normative",
+  "design_check": {
+    "T_max": 0.0,
+    "T_nom": 200.0,
+    "enabled": true,
+    "evidence_badge": "CORE-SCREENING",
+    "load_distribution": 1.0,
+    "method_label": "Uniform-bearing pressure screening (not DIN 6892 Method B)",
+    "n_keys": 1,
+    "p_perm_hub": 0.0,
+    "p_perm_shaft": 0.0
+  },
+  "din6892": {
+    "K_R": 1.0,
+    "K_lambda": 1.0,
+    "UPF_um": 18.0,
+    "apply_variant_geometry": false,
+    "chamfer_s1_mm": 0.0,
+    "enabled": true,
+    "f_H": 1.0,
+    "f_S": 1.0,
+    "factor_provenance": {
+      "K_R": "USER-INPUT",
+      "K_lambda": "USER-INPUT",
+      "f_H": "USER-INPUT",
+      "f_S": "USER-INPUT",
+      "phi": "USER-INPUT"
+    },
+    "key_count": 1,
+    "load_cycles": 10000,
+    "load_ratio_R": 0.0,
+    "material_pair": "C45N_C45N",
+    "method": "B_DIN_CURRENT",
+    "method_a": {
+      "contact_verified": false,
+      "cycles": 0,
+      "delta_volume_mm3": null,
+      "din743_verified": false,
+      "equilibrium_verified": false,
+      "matching_mesh_verified": false,
+      "mesh_convergence_verified": false,
+      "minimum_cycles": 10,
+      "postprocess": null,
+      "source_frame_identified": false,
+      "trials": [],
+      "unloaded_frame_verified": false
+    },
+    "phi": 1.0,
+    "safety_factor": 1.2,
+    "use_fva_material_data": true,
+    "v": 0.5,
+    "variant_id": "VB1",
+    "xi_per_mille": 0.0
+  },
+  "element_order": "linear",
+  "fva_600_iii": {
+    "backend": "method_a_connected_mesh_v1",
+    "backend_capability": "METHOD_A_CONNECTED_MATCHED_OPTIONAL_JOB",
+    "contact": {
+      "elastic_slip_mm": 0.001,
+      "finite_sliding": true,
+      "friction_fit": 0.0001,
+      "friction_service": 0.2,
+      "interference_distribution": "HALF_PER_FLANK",
+      "interference_per_flank_mm": 0.009,
+      "interference_ramp": true,
+      "interference_total_mm": 0.018,
+      "normal_stiffness_N_per_mm3": 10000000.0
+    },
+    "cycles": 20,
+    "density_tonne_per_mm3": 7.85e-09,
+    "enabled": false,
+    "evidence_badge": "FVA-RESEARCH",
+    "execution": {
+      "cpus": 1,
+      "create_job": false,
+      "job_name": "",
+      "precision": "SINGLE",
+      "submit_solver": false
+    },
+    "is_complete_method_a": false,
+    "material_models": {
+      "hub": "UML_RAMBERG_OSGOOD",
+      "key": "ELASTIC_IDEAL_PLASTIC",
+      "shaft": "CHABOCHE_LEMAITRE_COMBINED"
+    },
+    "material_pair": "C45N_C45N",
+    "materials": {
+      "hub": {
+        "E_MPa": 196000.0,
+        "K_prime_MPa": 955.0,
+        "Re_MPa": 279.0743851,
+        "Rm_MPa": 579.0,
+        "intervals": 150,
+        "n_prime": 0.15,
+        "nu": 0.3
+      },
+      "key": {
+        "E_MPa": 210000.0,
+        "nu": 0.3,
+        "yield_MPa": 928.0
+      },
+      "shaft": {
+        "C1_MPa": 15260.0,
+        "E_MPa": 187000.0,
+        "Qinf_MPa": 32.74,
+        "Re_MPa": 378.0,
+        "b_iso": 249.8,
+        "gamma1": 50.8,
+        "nu": 0.3
+      }
+    },
+    "mesh_matching": {
+      "coordinate_decimals": 6,
+      "interfaces": [
+        "SHAFT_KEY_LEFT",
+        "SHAFT_KEY_RIGHT",
+        "HUB_KEY_LEFT",
+        "HUB_KEY_RIGHT",
+        "SHAFT_HUB"
+      ],
+      "required": true,
+      "target_size_mm": 0.8,
+      "tolerance_mm": 1e-06,
+      "verify_after_meshing": true
+    },
+    "method": "din6892_method_a_fva600",
+    "method_a_min_cycles": 10,
+    "recommended_cycles": 20,
+    "recommended_safety_factor": 1.2,
+    "requested_method": "A_FE_VOLUME",
+    "source_id": "FVA600_III_1686_2025",
+    "steps": {
+      "contact_increment_s": 0.05,
+      "contact_time_s": 1.0,
+      "cycle_period_s": 2.0,
+      "cycle_time_s": 2.0,
+      "friction_time_s": 1.0
+    },
+    "strict_no_job": true,
+    "torque_Nm": 1256.0,
+    "v_crit": 0.5,
+    "variant_id": "VB1",
+    "workflow": "method_a_numerical"
+  },
+  "groove_form": "N1",
+  "hub": {
+    "L_hub": 38.0,
+    "QA_shaft_over_outer": 0.5,
+    "groove_clearance": 0.0215,
+    "hub_outer_over_shaft": 2.0,
+    "r1": 0.25,
+    "seed": 0.0
+  },
+  "hub_type": "cylindrical",
+  "key": {
+    "c": 0.8,
+    "chamfer_angle": 45.0,
+    "l": 0.0,
+    "seed": 0.0,
+    "snap_length_to_din": true
+  },
+  "key_form": "A",
+  "linear_hex_code": "C3D8",
+  "make_preview": true,
+  "matlab": {
+    "bundle_dir": "",
+    "entry_function": "fva600_method_a_bundle",
+    "executable": "matlab",
+    "keep_bundle": true,
+    "mode": "OFF",
+    "timeout_s": 300
+  },
+  "materials": {
+    "STEEL_HUB": {
+      "E": 210000.0,
+      "Re": 430.0,
+      "grade": "C45",
+      "nu": 0.3,
+      "rho": 7.85e-09
+    },
+    "STEEL_KEY": {
+      "E": 210000.0,
+      "Re": 430.0,
+      "grade": "C45",
+      "nu": 0.3,
+      "rho": 7.85e-09
+    },
+    "STEEL_SHAFT": {
+      "E": 210000.0,
+      "Re": 430.0,
+      "grade": "C45",
+      "nu": 0.3,
+      "rho": 7.85e-09
+    }
+  },
+  "mesh": {
+    "algorithm_version": "auto-mesh-1.0",
+    "budgets": {},
+    "fail_on_quality": true,
+    "fixed_recipe": "",
+    "max_attempts": 4,
+    "parts": {},
+    "selection": "auto",
+    "targets": {},
+    "template": "AUTO_BALANCED"
+  },
+  "model_name": "PARAM_MODEL",
+  "notch": {
+    "apply_to_hub": true,
+    "arc_elems": 6,
+    "arc_scope": "band",
+    "axial_factor": 0.0,
+    "band_factor": 6.0,
+    "band_max_factor": 3.0,
+    "enabled": true,
+    "method": "bias"
+  },
+  "output_dir": "",
+  "preview": {
+    "height": 1200,
+    "notch_zoom": true,
+    "views": [
+      "Iso",
+      "Front",
+      "Right"
+    ],
+    "width": 1600
+  },
+  "project": {
+    "language": "es"
+  },
+  "save_cae": true,
+  "schema_version": 6,
+  "shaft": {
+    "D": 40.0,
+    "L_over_D": 3.0,
+    "R_cap": 0.0,
+    "diameter_mm": 40.0,
+    "dz": 38.0,
+    "r2": 0.25,
+    "seed": 0.0,
+    "slot_clearance": 0.0,
+    "z0_offset": 5.0
+  },
+  "standards": {
+    "registry": {
+      "DIN_6880": {
+        "badge": "NOT-IMPLEMENTED",
+        "implementation": "REFERENCE_ONLY",
+        "notes": "Material/product reference only",
+        "role": "key_material",
+        "title": "Key stock"
+      },
+      "DIN_6885_1_2021": {
+        "badge": "NORMATIVE",
+        "implementation": "IMPLEMENTED",
+        "notes": "Numeric DIN 6885-1 bands/forms implemented by keyjoint_core",
+        "role": "geometry",
+        "title": "Parallel keys, geometry and tolerances"
+      },
+      "DIN_6888": {
+        "badge": "NOT-IMPLEMENTED",
+        "implementation": "NOT_IMPLEMENTED",
+        "notes": "Visible choice, but no Woodruff-key solid backend is implemented",
+        "role": "alternative_geometry",
+        "title": "Woodruff keys"
+      },
+      "DIN_6892": {
+        "badge": "DIN-METHOD",
+        "implementation": "METHODS_A_B_C",
+        "notes": "A/B/C workflows; licensed diagram factors remain user inputs",
+        "role": "strength",
+        "title": "Parallel-key load-carrying capacity"
+      },
+      "DIN_7190_1": {
+        "badge": "USER-INPUT",
+        "implementation": "USER_INPUT",
+        "notes": "M_Rmin or K_R must be supplied; FVA recommendation K_R=1 is separately labelled",
+        "role": "friction_closure",
+        "title": "Interference fits / minimum friction torque"
+      },
+      "DIN_743": {
+        "badge": "USER-INPUT",
+        "implementation": "EXTERNAL_RESULT_REQUIRED",
+        "notes": "Required independent fatigue verification; no bundled DIN tables",
+        "role": "fatigue",
+        "title": "Shaft fatigue strength"
+      },
+      "DIN_EN_ISO_18265": {
+        "badge": "FVA-RESEARCH",
+        "implementation": "REPORT_DATA_ONLY",
+        "notes": "FVA Table 6 estimates are available; no general conversion table is bundled",
+        "role": "material",
+        "title": "Hardness conversion"
+      },
+      "DIN_EN_ISO_286": {
+        "badge": "USER-INPUT",
+        "implementation": "USER_INPUT",
+        "notes": "Fit/interference may be entered; complete licensed tolerance tables are not bundled",
+        "role": "fit",
+        "title": "Limits and fits"
+      }
+    },
+    "registry_version": "din6892-methods-1.0",
+    "selected": {
+      "fatigue": "DIN_743",
+      "fit": "DIN_EN_ISO_286",
+      "friction_closure": "DIN_7190_1",
+      "geometry": "DIN_6885_1_2021",
+      "hardness": "DIN_EN_ISO_18265",
+      "key_material": "DIN_6880",
+      "strength": "DIN_6892"
+    }
+  },
+  "study": {
+    "csv": true,
+    "enabled": false,
+    "seed_scales": [
+      1.6,
+      1.2,
+      1.0,
+      0.8
+    ]
+  }
+}

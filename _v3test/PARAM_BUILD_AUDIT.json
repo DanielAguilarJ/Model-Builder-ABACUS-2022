@@ -1,0 +1,527 @@
+{
+  "analysis": null, 
+  "builder_version": "3.0", 
+  "checks": [
+    {
+      "flag": "ok", 
+      "label": "shaft OD vs hub bore", 
+      "note": "gap>=0 (0 = line-to-line seat)", 
+      "value": 0.0
+    }, 
+    {
+      "flag": "ok", 
+      "label": "key base vs keyway floor", 
+      "note": "should be ~0", 
+      "value": 0.0
+    }, 
+    {
+      "flag": "ok", 
+      "label": "shaft keyway flank/side", 
+      "note": ">=0 (0 = tight fit, DIN P9/h9)", 
+      "value": 0.0
+    }, 
+    {
+      "flag": "ok", 
+      "label": "hub groove flank/side", 
+      "note": ">=0", 
+      "value": 0.010749999999999815
+    }, 
+    {
+      "flag": "ok", 
+      "label": "key top vs groove roof (g_c)", 
+      "note": "gap>=0", 
+      "value": 0.3000000000000007
+    }, 
+    {
+      "flag": "ok", 
+      "label": "key length vs keyway (Form A)", 
+      "note": "l <= 50.00", 
+      "value": 0.0
+    }, 
+    {
+      "flag": "info", 
+      "label": "hub length vs keyway span", 
+      "note": "info only", 
+      "value": 12.0
+    }, 
+    {
+      "flag": "ok", 
+      "label": "plain shaft after keyway", 
+      "note": "room for the end BC (want >= D/4 = 10.00)", 
+      "value": 59.0
+    }, 
+    {
+      "flag": "ok", 
+      "label": "chamfer c vs root fillet r2", 
+      "note": "need c >= r2 = 0.250", 
+      "value": 0.55
+    }, 
+    {
+      "flag": "ok", 
+      "label": "-> bottom chamfer clearance", 
+      "note": "= (c - r2)/sqrt(2)", 
+      "value": 0.38890872965260115
+    }, 
+    {
+      "flag": "ok", 
+      "label": "-> top chamfer clearance", 
+      "note": "vs hub roof fillet r1", 
+      "value": 0.6086421619063204
+    }, 
+    {
+      "flag": "ok", 
+      "label": "straight flank left on key", 
+      "note": "= h - 2c, load-carrying height", 
+      "value": 6.4
+    }, 
+    {
+      "flag": "ok", 
+      "label": "hub wall left above keyway", 
+      "note": "= d_a/2 - (R + t2); raise Q_A if <= 0", 
+      "value": 16.7
+    }
+  ], 
+  "derived": {
+    "D": 40.0, 
+    "L": 120.0, 
+    "L_hub": 38.0, 
+    "L_over_D": 3.0, 
+    "QA": 2.0, 
+    "R": 20.0, 
+    "R_cap": 6.0, 
+    "R_cap_auto": true, 
+    "T_apply": 200.0, 
+    "T_apply_Nmm": 200000.0, 
+    "T_max": 200000.0, 
+    "T_nom": 200000.0, 
+    "T_perm": 718.96, 
+    "T_perm_hub": 718.96, 
+    "T_perm_shaft": 1372.56, 
+    "Wt": 12566.370614359172, 
+    "an_on": false, 
+    "ar_notch_expect": 38.197186342054884, 
+    "arc_len_hub": 0.39269908169872414, 
+    "arc_len_shaft": 0.39269908169872414, 
+    "b": 12.0, 
+    "band_hub": 1.5, 
+    "band_shaft": 1.5, 
+    "builder_version": "3.0", 
+    "c": 0.8, 
+    "c1": 17.0, 
+    "c2": 55.0, 
+    "c_min_bottom": 0.25, 
+    "chamfer_angle": 45.0, 
+    "clear_bottom": 0.38890872965260115, 
+    "clear_top": 0.6086421619063204, 
+    "d_a": 80.0, 
+    "d_i": 40.0, 
+    "d_over_D1": 0.5, 
+    "dc_on": true, 
+    "din_band": [
+      38.0, 
+      44.0
+    ], 
+    "din_in_table": true, 
+    "dz": 38.0, 
+    "flank_in_shaft": 4.2, 
+    "flank_total": 6.4, 
+    "form": "A", 
+    "g_c": 0.3000000000000007, 
+    "groove_clearance": 0.0215, 
+    "groove_roof": 23.3, 
+    "groove_w": 12.0215, 
+    "h": 8.0, 
+    "h_bear_hub": 2.2, 
+    "h_bear_shaft": 4.2, 
+    "hub_fillet_edges": 2, 
+    "hub_wall_left": 16.7, 
+    "keyway_span": 50.0, 
+    "l": 50.0, 
+    "l_auto": true, 
+    "l_max": 50.0, 
+    "l_snapped": false, 
+    "l_tr": 38.0, 
+    "n_keys": 1, 
+    "notch_arc_elems": 6, 
+    "notch_arc_scope": "band", 
+    "notch_axial_factor": 0.0, 
+    "notch_band_factor": 6.0, 
+    "notch_band_max_factor": 3.0, 
+    "notch_hub": true, 
+    "notch_method": "bias", 
+    "notch_on": true, 
+    "notch_set": "NOTCH_SHAFT", 
+    "notch_set_size": 3048, 
+    "p_hub": 119.61722488038278, 
+    "p_perm_hub": 430.0, 
+    "p_perm_shaft": 430.0, 
+    "p_shaft": 62.65664160401003, 
+    "phi": 1.0, 
+    "r1": 0.25, 
+    "r2": 0.25, 
+    "r2_din_range": [
+      0.25, 
+      0.4
+    ], 
+    "r2_in_din": true, 
+    "s_notch_hub": 0.06544984694978735, 
+    "s_notch_shaft": 0.06544984694978735, 
+    "schema_version": 3, 
+    "seed_bushing": 0.9, 
+    "seed_bushing_auto": false, 
+    "seed_hub": 2.0, 
+    "seed_hub_auto": true, 
+    "seed_key": 0.6, 
+    "seed_key_auto": true, 
+    "seed_rule_hub": "d_a/40", 
+    "seed_rule_shaft": "D/16", 
+    "seed_shaft": 2.5, 
+    "seed_shaft_auto": true, 
+    "shaft_fillet_edges": 4, 
+    "slot_clearance": 0.0, 
+    "slot_w": 12.0, 
+    "t1": 5.0, 
+    "t2": 3.3, 
+    "tau_nom": 15.915494309189535, 
+    "tau_nom_apply": 15.915494309189535, 
+    "tau_peak_hub_lit": 62.07042780583919, 
+    "tau_peak_lit": 46.632398325925344, 
+    "thick_walled": true, 
+    "util_hub": 0.27817959274507625, 
+    "util_shaft": 0.14571312000932565, 
+    "x_slot": 6.0, 
+    "x_w": 6.0, 
+    "yF": 15.0, 
+    "y_max": 23.0, 
+    "y_min": 15.0, 
+    "z0": 11.0, 
+    "z0_offset": 5.0, 
+    "z1": 61.0, 
+    "z_mid": 36.0
+  }, 
+  "instances": {
+    "HUB-1": {
+      "high": [
+        40.0, 
+        40.0, 
+        55.0
+      ], 
+      "low": [
+        -40.0, 
+        -40.0, 
+        17.0
+      ]
+    }, 
+    "KEY-1": {
+      "high": [
+        6.0, 
+        23.0, 
+        61.0
+      ], 
+      "low": [
+        -6.0, 
+        15.0, 
+        11.0
+      ]
+    }, 
+    "SHAFT-1": {
+      "high": [
+        20.0, 
+        20.0, 
+        120.0
+      ], 
+      "low": [
+        -20.0, 
+        -20.0, 
+        0.0
+      ]
+    }
+  }, 
+  "issues": [
+    {
+      "code": "hub_shorter_than_key", 
+      "level": "info", 
+      "msg": "The hub (38.00) is shorter than the key (50.00), so the key ends stand outside the hub and carry no hub load. Normal for a Form A key that fills the keyway, but note [3]: the peak shear sits at the keyway end."
+    }, 
+    {
+      "code": "ar_notch_expect", 
+      "level": "warn", 
+      "msg": "The notch elements will be about 38 times longer axially than in-plane (global seed 2.50 vs notch size 0.0654 mm). Either lower the shaft seed or lower notch.arc_elems."
+    }
+  ], 
+  "model": "V3_FULL", 
+  "notch_metrics": {
+    "band_edges": 0, 
+    "band_min": null, 
+    "band_size": null, 
+    "cap_edges": 0, 
+    "cap_min": null, 
+    "cap_size": null, 
+    "edges": 6, 
+    "elem_size": 0.06544984694978735, 
+    "max_elems": 6.0, 
+    "min_elems": 6.0, 
+    "radius": 0.25, 
+    "second_order": false
+  }, 
+  "options": {
+    "ar_repair_threshold": 25.0, 
+    "element_order": "linear", 
+    "hub_type": "cylindrical", 
+    "key_form": "A", 
+    "linear_hex_code": "C3D8", 
+    "notch": {
+      "apply_to_hub": true, 
+      "arc_elems": 6, 
+      "arc_scope": "band", 
+      "axial_factor": 0.0, 
+      "band_factor": 6.0, 
+      "band_max_factor": 3.0, 
+      "enabled": true, 
+      "method": "bias"
+    }
+  }, 
+  "params": {
+    "analysis": {
+      "T_apply": 200.0, 
+      "cpus": 1, 
+      "create_job": true, 
+      "enabled": false, 
+      "friction": 0.15, 
+      "hold": "hub_outer", 
+      "initial_inc": 0.1, 
+      "max_num_inc": 200, 
+      "min_inc": 1e-08, 
+      "nlgeom": false, 
+      "post_process": true, 
+      "stabilize": true, 
+      "submit": false
+    }, 
+    "ar_repair_threshold": 25.0, 
+    "audit": {
+      "json": true, 
+      "text": true
+    }, 
+    "bushing": {
+      "length": 38.0, 
+      "outer_dia_large": 63.8, 
+      "outer_dia_small": 60.0, 
+      "seed": 0.9
+    }, 
+    "design_check": {
+      "T_max": 0.0, 
+      "T_nom": 200.0, 
+      "enabled": true, 
+      "load_distribution": 1.0, 
+      "n_keys": 1, 
+      "p_perm_hub": 0.0, 
+      "p_perm_shaft": 0.0
+    }, 
+    "element_order": "linear", 
+    "hub": {
+      "L_hub": 38.0, 
+      "QA": 2.0, 
+      "groove_clearance": 0.0215, 
+      "r1": 0.25, 
+      "seed": 0.0
+    }, 
+    "hub_type": "cylindrical", 
+    "key": {
+      "c": 0.8, 
+      "chamfer_angle": 45.0, 
+      "l": 0.0, 
+      "seed": 0.0, 
+      "snap_length_to_din": false
+    }, 
+    "key_form": "A", 
+    "linear_hex_code": "C3D8", 
+    "make_preview": true, 
+    "materials": {
+      "STEEL_HUB": {
+        "E": 210000.0, 
+        "Re": 430.0, 
+        "grade": "C45", 
+        "nu": 0.3, 
+        "rho": 7.85e-09
+      }, 
+      "STEEL_KEY": {
+        "E": 210000.0, 
+        "Re": 430.0, 
+        "grade": "C45", 
+        "nu": 0.3, 
+        "rho": 7.85e-09
+      }, 
+      "STEEL_SHAFT": {
+        "E": 210000.0, 
+        "Re": 430.0, 
+        "grade": "C45", 
+        "nu": 0.3, 
+        "rho": 7.85e-09
+      }
+    }, 
+    "model_name": "V3_FULL", 
+    "notch": {
+      "apply_to_hub": true, 
+      "arc_elems": 6, 
+      "arc_scope": "band", 
+      "axial_factor": 0.0, 
+      "band_factor": 6.0, 
+      "band_max_factor": 3.0, 
+      "enabled": true, 
+      "method": "bias"
+    }, 
+    "output_dir": "c:\\simulations\\D40_HEX_CONICAL_KRESINSKY_V1\\parametric_builder\\_v3test", 
+    "preview": {
+      "height": 1200, 
+      "notch_zoom": true, 
+      "views": [
+        "Iso", 
+        "Front", 
+        "Right"
+      ], 
+      "width": 1600
+    }, 
+    "save_cae": false, 
+    "schema_version": 3, 
+    "shaft": {
+      "D": 40.0, 
+      "L_over_D": 3.0, 
+      "R_cap": 0.0, 
+      "dz": 38.0, 
+      "r2": 0.25, 
+      "seed": 0.0, 
+      "slot_clearance": 0.0, 
+      "z0_offset": 5.0
+    }, 
+    "study": {
+      "csv": true, 
+      "enabled": false, 
+      "seed_scales": [
+        1.6, 
+        1.2, 
+        1.0, 
+        0.8
+      ]
+    }
+  }, 
+  "parts": {
+    "Hub": {
+      "ar_avg": 7.4621100425720215, 
+      "ar_worst": 46.01407241821289, 
+      "bbox": [
+        80.0, 
+        80.0, 
+        38.0
+      ], 
+      "cells": 32, 
+      "components": 1, 
+      "elements": 33237, 
+      "failed": 0, 
+      "hex_pct": 98.20982639829106, 
+      "nodes": 37259, 
+      "notch": {
+        "arc": 4, 
+        "axial": 0, 
+        "band": 48, 
+        "band_width": 1.5, 
+        "fade": 8, 
+        "graded_cells": 20, 
+        "method": "bias 0.0654 -> 0.5000 mm", 
+        "s_band_max": 0.5, 
+        "s_notch": 0.06544984694978735
+      }, 
+      "repairs": 0, 
+      "seconds": 3.6, 
+      "sections": [
+        "SEC_STEEL_HUB"
+      ], 
+      "types": {
+        "C3D4": 595, 
+        "C3D8": 32642
+      }, 
+      "warnings": 1538
+    }, 
+    "Key": {
+      "ar_avg": 1.8026061058044434, 
+      "ar_worst": 6.323424339294434, 
+      "bbox": [
+        12.0, 
+        50.0, 
+        8.0
+      ], 
+      "cells": 48, 
+      "components": 1, 
+      "elements": 31873, 
+      "failed": 0, 
+      "hex_pct": 85.08769177673894, 
+      "nodes": 31101, 
+      "notch": {}, 
+      "repairs": 0, 
+      "seconds": 2.1, 
+      "sections": [
+        "SEC_STEEL_KEY"
+      ], 
+      "types": {
+        "C3D4": 4753, 
+        "C3D8": 27120
+      }, 
+      "warnings": 350
+    }, 
+    "Shaft": {
+      "ar_avg": 6.52066707611084, 
+      "ar_worst": 62.161460876464844, 
+      "bbox": [
+        40.0, 
+        40.0, 
+        120.0
+      ], 
+      "cells": 96, 
+      "components": 1, 
+      "elements": 39983, 
+      "failed": 0, 
+      "hex_pct": 91.78901032939, 
+      "nodes": 41194, 
+      "notch": {
+        "arc": 4, 
+        "axial": 0, 
+        "band": 24, 
+        "band_width": 1.5, 
+        "fade": 16, 
+        "graded_cells": 20, 
+        "method": "bias 0.0654 -> 0.5000 mm", 
+        "s_band_max": 0.5, 
+        "s_notch": 0.06544984694978735
+      }, 
+      "repairs": 0, 
+      "seconds": 6.7, 
+      "sections": [
+        "SEC_STEEL_SHAFT"
+      ], 
+      "types": {
+        "C3D4": 3283, 
+        "C3D8": 36700
+      }, 
+      "warnings": 2627
+    }
+  }, 
+  "post": null, 
+  "schema_version": 3, 
+  "sets": [
+    "ALL_HUB_ELEMENTS", 
+    "ALL_HUB_NODES", 
+    "ALL_KEY_ELEMENTS", 
+    "ALL_KEY_NODES", 
+    "ALL_SHAFT_ELEMENTS", 
+    "ALL_SHAFT_NODES", 
+    "NOTCH_SHAFT"
+  ], 
+  "surfaces": [], 
+  "timestamp": "2026-09-03 17:30:10", 
+  "totals": {
+    "dof": 328662, 
+    "elements": 105093, 
+    "hex_pct": 91.78727412862892, 
+    "nodes": 109554
+  }, 
+  "verdict": "OK"
+}

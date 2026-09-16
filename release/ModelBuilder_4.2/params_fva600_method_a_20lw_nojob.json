@@ -1,0 +1,106 @@
+{
+  "schema_version": 6,
+  "project": {
+    "language": "es"
+  },
+  "model_name": "D40_FVA600_METHOD_A_20LW_MATCHED_NOJOB",
+  "output_dir": "",
+  "save_cae": true,
+  "make_preview": true,
+  "compliance_mode": "normative",
+  "key_form": "A",
+  "groove_form": "N1",
+  "hub_type": "cylindrical",
+  "element_order": "quadratic",
+  "linear_hex_code": "C3D8",
+  "mesh": {
+    "template": "ROBUST_FALLBACK",
+    "selection": "fixed",
+    "algorithm_version": "auto-mesh-1.0",
+    "max_attempts": 1,
+    "fixed_recipe": "FREE_TET",
+    "fail_on_quality": true
+  },
+  "shaft": {
+    "diameter_mm": 40.0,
+    "D": 40.0,
+    "L_over_D": 3.0,
+    "dz": 38.0,
+    "z0_offset": 5.0,
+    "R_cap": 0.0,
+    "r2": 0.25,
+    "seed": 0.8
+  },
+  "key": {
+    "l": 50.0,
+    "snap_length_to_din": false,
+    "seed": 0.8
+  },
+  "hub": {
+    "L_hub": 38.0,
+    "QA_shaft_over_outer": 0.5,
+    "hub_outer_over_shaft": 2.0,
+    "groove_clearance": 0.0215,
+    "seed": 0.8
+  },
+  "analysis": {
+    "enabled": false,
+    "create_job": false,
+    "submit": false
+  },
+  "study": {
+    "enabled": false
+  },
+  "din6892": {
+    "enabled": true,
+    "method": "A_FE_VOLUME",
+    "variant_id": "VB1",
+    "material_pair": "C45N_C45N",
+    "apply_variant_geometry": true,
+    "load_ratio_R": 0.0,
+    "UPF_um": 18.0,
+    "xi_per_mille": 0.0,
+    "safety_factor": 1.2,
+    "v": 0.5
+  },
+  "fva_600_iii": {
+    "enabled": true,
+    "backend": "method_a_connected_mesh_v1",
+    "backend_capability": "METHOD_A_CONNECTED_MATCHED_OPTIONAL_JOB",
+    "variant_id": "VB1",
+    "material_pair": "C45N_C45N",
+    "requested_method": "A_FE_VOLUME",
+    "workflow": "method_a_numerical",
+    "method": "din6892_method_a_fva600",
+    "cycles": 20,
+    "method_a_min_cycles": 10,
+    "strict_no_job": true,
+    "v_crit": 0.5,
+    "torque_Nm": 1256.0,
+    "mesh_matching": {
+      "required": true,
+      "target_size_mm": 0.8,
+      "tolerance_mm": 1e-06,
+      "verify_after_meshing": true
+    },
+    "material_models": {
+      "shaft": "CHABOCHE_LEMAITRE_COMBINED",
+      "hub": "UML_RAMBERG_OSGOOD",
+      "key": "ELASTIC_IDEAL_PLASTIC"
+    },
+    "execution": {
+      "create_job": false,
+      "submit_solver": false,
+      "cpus": 1,
+      "precision": "SINGLE"
+    }
+  },
+  "matlab": {
+    "mode": "OFF",
+    "executable": "matlab",
+    "timeout_s": 300,
+    "bundle_dir": "",
+    "entry_function": "fva600_method_a_bundle",
+    "keep_bundle": true
+  }
+}

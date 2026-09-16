@@ -1,0 +1,238 @@
+{
+  "contract_version": 4,
+  "builder_version": "4.2",
+  "builder_schema": 6,
+  "purpose": "Traceable contract for automated shaft-hub-key models and DIN 6892/FVA calculations",
+  "compatibility": {
+    "accepted_input_schemas": [5, 6],
+    "migration": "schema 5 is migrated explicitly to schema 6 before defaults are merged",
+    "future_schema_policy": "reject",
+    "canonical_geometry_keys": [
+      "shaft.diameter_mm",
+      "hub.QA_shaft_over_outer"
+    ],
+    "deprecated_aliases": [
+      "shaft.D",
+      "hub.hub_outer_over_shaft",
+      "hub.QA"
+    ],
+    "alias_policy": "retain synchronized compatibility aliases with provenance; reject conflicting values"
+  },
+  "evidence_badges": [
+    "NORMATIVE",
+    "DIN-METHOD",
+    "FVA-RESEARCH",
+    "USER-INPUT",
+    "NOT-IMPLEMENTED",
+    "LITERATURE",
+    "CORE-SCREENING",
+    "USER-OVERRIDE"
+  ],
+  "distribution_policy": {
+    "release_by_whitelist": true,
+    "release_target": "release/ModelBuilder_4.2",
+    "immutable_historical_release": "release/ModelBuilder_4.1",
+    "historical_release_guard": "snapshot every protected 4.1 file before the build and verify path set, size and SHA-256 before and after 4.2 publication",
+    "mandatory_companions": [
+      "README.md",
+      "TECHNICAL_TRACEABILITY.md",
+      "technical_contract.json",
+      "params_default.json",
+      "params_fva600_method_a_20lw_nojob.json",
+      "params_fva600_research_presolve_1lw.json",
+      "BUILD_MANIFEST.json",
+      "SHA256SUMS.txt"
+    ],
+    "excluded_content": [
+      "licensed DIN/FVA source PDFs",
+      "protected standard figures",
+      "Abaqus CAE/ODB/solver and replay files",
+      "run-specific audits",
+      "loose Python source files"
+    ]
+  },
+  "calculation_methods": {
+    "A_FE_VOLUME": {
+      "badge": "FVA-RESEARCH",
+      "status_without_external_result": "EXTERNAL_RESULT_REQUIRED",
+      "equations": [16, 17, 18],
+      "formulae": [
+        "V_theo = l_tr * t1tr * (U_PF_um / 1000)",
+        "v = DeltaV / V_theo",
+        "criterion: v <= v_crit"
+      ],
+      "minimum_evidence": [
+        "at least 10 evaluated load cycles",
+        "identified source step and unloaded frame",
+        "explicit unloaded-frame confirmation",
+        "external x_mm,z_mm,opening_um CSV with retained SHA-256",
+        "unchanged l_tr, t1tr and U_PF since postprocessing"
+      ],
+      "solver_boundary": "The calculation engine never solves an ODB. The connected CAE backend can create or submit a Job only when explicitly enabled; both bundled release presets remain NOJOB, and no release evidence claims a solved source ODB"
+    },
+    "B_DIN_CURRENT": {
+      "badge": "DIN-METHOD",
+      "equations": "1..12",
+      "formulae": [
+        "p_zul = f_S * f_H * Re",
+        "f_W = min(1, 2 * N_W^(-0.1))",
+        "K_V = 1 / (i * phi)",
+        "M_t_zul_Nm = f_W * p_zul * d_w * l_tr * t1tr / (2 * K_V * K_lambda * K_R * 1000)"
+      ],
+      "external_inputs": ["K_lambda", "K_R", "f_H", "f_S", "phi"],
+      "limitation": "licensed diagram/table factors remain explicit USER-INPUT values"
+    },
+    "B_FVA_2025": {
+      "badge": "FVA-RESEARCH",
+      "equations": [26, 29, 33, 34, 35, 36],
+      "formulae": [
+        "f_Sv = 0.74 * v + 0.63",
+        "f_WS = Rm / Re",
+        "f_S_ltr = -0.17 * (l_tr / d_w) + 0.16",
+        "f_S_ges = f_WS + f_S_ltr",
+        "K_d = 2.08 * d_w^(-0.18) for d_w <= 100 mm, otherwise 0.82",
+        "M_t_zul_Nm = f_Sv * f_S_ges * f_H * f_W * Re * d_w * l_tr * t1tr / (2 * K_R * K_lambda * K_d * K_V * 1000)"
+      ],
+      "limitation": "research reformulation from FVA 600 III booklet 1686 (2025), not a published DIN edition"
+    },
+    "C_PRELIMINARY": {
+      "badge": "DIN-METHOD",
+      "equations": [30, 31],
+      "formulae": [
+        "p_zul = 0.9 * Re_min",
+        "M_t_zul_Nm = p_zul * (h - t1) * l_tr * (d_w / 2) * i * phi / 1000"
+      ],
+      "limitation": "preliminary sizing only; Method B/A and DIN 743 remain required where applicable"
+    },
+    "common": {
+      "design_torque": "M_t_design_Nm = M_t_zul_Nm / safety_factor",
+      "effective_bearing_depth": "DIN 6892 equation 9 as implemented in din6892_methods.effective_bearing_depth"
+    }
+  },
+  "fva_catalog": {
+    "variants": ["VB1", "VB2", "VB3", "VB4", "VB5", "VB6", "VB7", "VB8"],
+    "variant_policy": "discrete research configurations; applying geometry is explicit and does not imply CAE executability",
+    "material_pairs": ["C45N_C45N", "42CRMO4QT_42CRMO4QT"],
+    "diameter_points_mm": [20, 40, 60],
+    "material_policy": "no interpolation between measured diameter points",
+    "legacy_backend": {
+      "id": "d40_v3_refined_hex_nojob",
+      "capability": "LEGACY_PARTIAL_VB1_C45_1LW_NOJOB",
+      "supported_method": "A_FE_VOLUME",
+      "supported_variant": "VB1",
+      "supported_material_pair": "C45N_C45N",
+      "supported_cycles": 1,
+      "matching": "NOT_VERIFIED",
+      "creates_job": false,
+      "submits_solver": false,
+      "complete_method_a": false,
+      "incompatible_requests": "blocked with stable validation codes; never coerced"
+    },
+    "connected_backend": {
+      "id": "method_a_connected_mesh_v1",
+      "capability": "METHOD_A_CONNECTED_MATCHED_OPTIONAL_JOB",
+      "supported_method": "A_FE_VOLUME",
+      "supported_variants": ["VB1", "VB2", "VB3", "VB4", "VB5", "VB6", "VB7", "VB8"],
+      "supported_material_pairs": ["C45N_C45N", "42CRMO4QT_42CRMO4QT"],
+      "minimum_cycles": 10,
+      "recommended_cycles": 20,
+      "matching": {
+        "status_before_build": "VERIFY_AT_BUILD",
+        "interfaces": [
+          "SHAFT_KEY_LEFT",
+          "SHAFT_KEY_RIGHT",
+          "HUB_KEY_LEFT",
+          "HUB_KEY_RIGHT",
+          "SHAFT_HUB"
+        ],
+        "requested_tolerance_mm": 1e-06,
+        "kernel_coordinate_floor_mm": 5e-05,
+        "effective_tolerance_rule": "max(requested_tolerance_mm, kernel_coordinate_floor_mm)",
+        "nominal_seed_alone_is_proof": false
+      },
+      "job_capability_when_explicitly_enabled": true,
+      "solver_submission_capability_when_explicitly_enabled": true,
+      "bundled_preset": {
+        "file": "params_fva600_method_a_20lw_nojob.json",
+        "cycles": 20,
+        "strict_no_job": true,
+        "creates_job": false,
+        "submits_solver": false
+      },
+      "runtime_build_evidence_bundled": false,
+      "complete_method_a": false,
+      "completion_requires": [
+        "accepted solved ODB",
+        "at least 10 evaluated cycles",
+        "explicitly confirmed unloaded frame",
+        "opening-volume postprocessing",
+        "convergence, equilibrium and contact review",
+        "independent DIN 743 review"
+      ]
+    }
+  },
+  "standards_registry": [
+    {"id": "DIN_6885_1_2021", "badge": "NORMATIVE", "implementation": "IMPLEMENTED", "role": "geometry"},
+    {"id": "DIN_6892", "badge": "DIN-METHOD", "implementation": "METHODS_A_B_C", "role": "strength"},
+    {"id": "DIN_743", "badge": "USER-INPUT", "implementation": "EXTERNAL_RESULT_REQUIRED", "role": "fatigue"},
+    {"id": "DIN_EN_ISO_286", "badge": "USER-INPUT", "implementation": "USER_INPUT", "role": "fit"},
+    {"id": "DIN_EN_ISO_18265", "badge": "FVA-RESEARCH", "implementation": "REPORT_DATA_ONLY", "role": "hardness"},
+    {"id": "DIN_7190_1", "badge": "USER-INPUT", "implementation": "USER_INPUT", "role": "friction_closure"},
+    {"id": "DIN_6880", "badge": "NOT-IMPLEMENTED", "implementation": "REFERENCE_ONLY", "role": "key_material"},
+    {"id": "DIN_6888", "badge": "NOT-IMPLEMENTED", "implementation": "NOT_IMPLEMENTED", "role": "alternative_geometry"}
+  ],
+  "sources": [
+    {
+      "id": "DIN6885_DIMENSIONS",
+      "badge": "NORMATIVE",
+      "reference": "DIN 6885-1:2021-11",
+      "implemented_scope": "Derived dimensions for 6 < d1 <= 500 mm, standard lengths, r1/r2 ranges and forms A/B/AB",
+      "copyright_policy": "The source document and protected figures are not distributed"
+    },
+    {
+      "id": "DIN6892_USER_LICENSED_CONTEXT",
+      "badge": "DIN-METHOD",
+      "reference": "DIN 6892 user-licensed context",
+      "implemented_scope": "Methods A/B/C equation workflows and M_t,zul/M_t,design; unavailable licensed diagram factors remain explicit inputs",
+      "limitation": "A calculated result is not certification and requires engineering review"
+    },
+    {
+      "id": "FVA600_III_1686_2025",
+      "badge": "FVA-RESEARCH",
+      "reference": "FVA 600 III final report, booklet 1686, 2025",
+      "implemented_scope": "VB1-VB8, discrete material points, Method-A opening-volume criterion and proposed Method-B reformulation",
+      "limitation": "Research proposal, not a current DIN edition; the bundled one-cycle backend is regression only"
+    },
+    {
+      "id": "CORE_PRESSURE_SCREENING",
+      "badge": "CORE-SCREENING",
+      "reference": "internal plausibility calculation",
+      "implemented_scope": "uniform-bearing pressure screening",
+      "limitation": "separate from and not a replacement for DIN 6892 Method B"
+    }
+  ],
+  "requirements": [
+    {"id": "REQ-SCHEMA-001", "statement": "Read and validate the raw schema before merging defaults; migrate 5 to 6 and reject future schemas", "implemented_by": "keyjoint_core.migrate_params and normalize_params"},
+    {"id": "REQ-SCHEMA-002", "statement": "Keep canonical geometry keys and compatibility aliases synchronized with conflict detection and provenance", "implemented_by": "keyjoint_core._synchronize_geometry_aliases"},
+    {"id": "REQ-DIN-001", "statement": "Reject normative DIN 6885 selection outside 6 < d1 <= 500 mm", "implemented_by": "keyjoint_core.din6885_row"},
+    {"id": "REQ-DIN-002", "statement": "Use one 26-band source for b, h, t1, t2, +tol(t1), d2_add and r1/r2 ranges", "implemented_by": "keyjoint_core.DIN6885 and DIN6885_RADII"},
+    {"id": "REQ-GEO-001", "statement": "Keep key_nominal_length, slot_total_length and load_bearing_length distinct", "implemented_by": "keyjoint_core.derive"},
+    {"id": "REQ-GEO-002", "statement": "Implement exact forms A, B and AB; block unavailable forms and DIN 6888 geometry", "implemented_by": "keyjoint_core validation and standard registry"},
+    {"id": "REQ-DIN6892-001", "statement": "Evaluate Methods A, B-current, B-FVA and C through one pure Python 2.7/3 engine", "implemented_by": "din6892_methods.evaluate"},
+    {"id": "REQ-DIN6892-002", "statement": "Report M_t,zul and M_t,design with method, equations, inputs, source and evidence badge", "implemented_by": "keyjoint_core._derive_din6892 and report_generator"},
+    {"id": "REQ-FVA-001", "statement": "Expose VB1-VB8 and both material pairs without interpolation or false CAE support", "implemented_by": "din6892_methods catalogs and backend assessment"},
+    {"id": "REQ-FVA-002", "statement": "Label the one-cycle NOJOB workflow as LEGACY_PARTIAL regression, not complete Method A", "implemented_by": "din6892_methods.BACKEND_CAPABILITIES and core validation"},
+    {"id": "REQ-POST-001", "statement": "Import finite non-negative rectangular CSV grids, integrate DeltaV, retain SHA-256 and require complete unloaded-frame evidence", "implemented_by": "fva600_postprocess"},
+    {"id": "REQ-TRACE-001", "statement": "Keep requested, derived and realized CAE records separate in JSON, GUI and report", "implemented_by": "keyjoint_core, model_builder_gui and report_generator"},
+    {"id": "REQ-I18N-001", "statement": "Provide Spanish, English and German with exact key and placeholder parity", "implemented_by": "model_builder_i18n and i18n catalogs"},
+    {"id": "REQ-MESH-001", "statement": "Apply hard mesh gates before deterministic ranking and aggregate by the worst piece", "implemented_by": "keyjoint_core mesh selection policy"},
+    {"id": "REQ-REL-001", "statement": "Publish only ModelBuilder_4.2 by whitelist and prove ModelBuilder_4.1 artifacts unchanged", "implemented_by": "make_release.py protected-release snapshot guard"}
+  ],
+  "supported_geometry": {
+    "key_forms": ["A", "B", "AB"],
+    "reference_only_key_forms": ["C", "D", "E", "F", "G", "H", "J"],
+    "groove_forms": ["N1"],
+    "reference_only_groove_forms": ["N2", "N3"],
+    "maximum_functional_roughness_Rz_um": 16
+  }
+}

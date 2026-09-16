@@ -1,0 +1,759 @@
+# -*- coding: utf-8 -*-
+"""
+================================================================================
+ PARAMETRIC BUILDER - Shaft / Key / Tapered Bushing / Conical Hub  (NOJOB)
+================================================================================
+ This script rebuilds the whole finite-element model from a set of parameters.
+ Change a value (for example the shaft diameter D), run it, and the model is
+ regenerated, meshed, assembled, audited and saved automatically.
+
+ HOW TO RUN
+ ----------
+   Option A - from a terminal (headless, recommended):
+       abaqus cae noGUI=build_parametric_model.py -- params.json
+
+   Option B - inside Abaqus/CAE:
+       File > Run Script... > build_parametric_model.py
+       (it will look for params.json next to this file)
+
+   Option C - the GUI (model_builder_gui.py) calls Option A for you.
+
+ The model is kept in NOJOB state: geometry + materials + mesh + assembly + sets.
+ No contact, steps, loads, boundary conditions or job are created.
+
+ Abaqus kernel is Python 2.7, so this file is written for Python 2.7.
+================================================================================
+"""
+from __future__ import print_function
+import os
+import sys
+import json
+import math
+
+from abaqus import mdb, session
+from abaqusConstants import *
+import regionToolset
+from mesh import ElemType
+
+# ------------------------------------------------------------------ constants
+AX = {'x': (YZPLANE, 0), 'y': (XZPLANE, 1), 'z': (XYPLANE, 2)}
+HEX8_EDGES = ((0, 1), (1, 2), (2, 3), (3, 0),
+              (4, 5), (5, 6), (6, 7), (7, 4),
+              (0, 4), (1, 5), (2, 6), (3, 7))
+
+
+# ================================================================== parameters
+def default_params():
+    """The validated D40 design. Every value can be overridden from JSON."""
+    return {
+        "model_name": "PARAM_MODEL",
+        "output_dir": "",                 # empty -> next to this script
+        "save_cae": True,
+        "make_preview": True,             # render a PNG of the assembly
+        "auto_din": False,                # derive key sizes from DIN 6885 by D
+        "ar_repair_threshold": 12.0,      # re-mesh (as tet) cells with AR above this
+        "element_order": "quadratic",     # quadratic (C3D20R/C3D10M) | linear (C3D8R/C3D4)
+
+        "shaft": {
+            "D": 40.0,                    # diameter
+            "L": 120.0,                   # length
+            "keyway_width": 12.0,
+            "keyway_depth": 5.0,
+            "keyway_end_radius": 6.0,
+            "keyway_center1_z": 17.0,     # first arc centre (axial)
+            "keyway_center_distance": 38.0,
+            "root_radius": 0.25,          # fillet at keyway floor/wall
+            "seed": 1.2
+        },
+        "key": {
+            "width": 12.0,
+            "height": 8.0,
+            "length": 38.0,
+            "base_y": 15.0,               # usually D/2 - keyway_depth
+            "chamfer": 0.8,               # straight 45-deg corner cut (0 = sharp)
+            "seed": 0.48
+        },
+        "bushing": {
+            "length": 38.0,
+            "bore_diameter": 40.0,
+            "outer_dia_small": 60.0,
+            "outer_dia_large": 63.8,
+            "groove_width": 12.0215,
+            "groove_floor_y": 18.0,
+            "groove_roof_y": 23.3,
+            "seed": 0.9
+        },
+        "hub": {
+            "outer_diameter": 80.0,
+            "length": 38.0,
+            "bore_small": 60.0,
+            "bore_large": 63.8,
+            "seed": 1.0
+        },
+        "materials": {
+            "steel_E": 210000.0,
+            "steel_nu": 0.30,
+            "steel_density": 7.85e-09
+        }
+    }
+
+
+def deep_update(base, extra):
+    """Recursively merge user JSON onto the defaults."""
+    for k, v in extra.items():
+        if isinstance(v, dict) and isinstance(base.get(k), dict):
+            deep_update(base[k], v)
+        else:
+            base[k] = v
+    return base
+
+
+def _to_str(obj):
+    """Convert unicode from JSON to byte str. The Abaqus 2.7 API rejects
+    unicode for name/string arguments ('found unicode, expecting ...')."""
+    if isinstance(obj, dict):
+        return dict((_to_str(k), _to_str(v)) for k, v in obj.items())
+    if isinstance(obj, (list, tuple)):
+        return type(obj)(_to_str(x) for x in obj)
+    try:
+        uni = unicode          # exists only on Python 2
+    except NameError:
+        uni = None
+    if uni is not None and isinstance(obj, uni):
+        try:
+            return obj.encode('ascii')
+        except UnicodeEncodeError:
+            return obj.encode('utf-8')
+    return obj
+
+
+# DIN 6885-1 parallel keys: (D_upto, b width, h height, t1 shaft depth, t2 hub depth)
+DIN6885 = [
+    (8,   2,  2,  1.2, 1.0), (10,  3,  3,  1.8, 1.4), (12,  4,  4,  2.5, 1.8),
+    (17,  5,  5,  3.0, 2.3), (22,  6,  6,  3.5, 2.8), (30,  8,  7,  4.0, 3.3),
+    (38,  10, 8,  5.0, 3.3), (44,  12, 8,  5.0, 3.3), (50,  14, 9,  5.5, 3.8),
+    (58,  16, 10, 6.0, 4.3), (65,  18, 11, 7.0, 4.4), (75,  20, 12, 7.5, 4.9),
+    (85,  22, 14, 9.0, 5.4), (95,  25, 14, 9.0, 5.4), (110, 28, 16, 10.0, 6.4),
+    (130, 32, 18, 11.0, 7.4), (150, 36, 20, 12.0, 8.4),
+]
+
+
+def din6885_key(D):
+    """Return the standard key (b, h, t1, t2) for a shaft diameter D [mm]."""
+    for d_upto, b, h, t1, t2 in DIN6885:
+        if D <= d_upto:
+            return {'b': float(b), 'h': float(h), 't1': float(t1), 't2': float(t2)}
+    last = DIN6885[-1]
+    return {'b': float(last[1]), 'h': float(last[2]),
+            't1': float(last[3]), 't2': float(last[4])}
+
+
+def apply_din6885(params):
+    """Overwrite the key/keyway/groove sizes with the DIN 6885 values for D."""
+    D = float(params['shaft']['D'])
+    k = din6885_key(D)
+    sh, ky, bu = params['shaft'], params['key'], params['bushing']
+    sh['keyway_width'] = k['b']
+    sh['keyway_depth'] = k['t1']
+    sh['keyway_end_radius'] = k['b'] / 2.0
+    ky['width'] = k['b']
+    ky['height'] = k['h']
+    ky['base_y'] = D / 2.0 - k['t1']
+    bu['bore_diameter'] = D
+    bu['groove_width'] = k['b'] + 0.0215        # small running clearance
+    bu['groove_floor_y'] = D / 2.0 - 2.0
+    bu['groove_roof_y'] = (D / 2.0 - k['t1']) + k['h'] + 0.3
+    print('[din6885] D=%.1f -> key b=%.1f h=%.1f t1=%.1f t2=%.1f' % (
+        D, k['b'], k['h'], k['t1'], k['t2']))
+    return params
+
+
+def load_params():
+    p = default_params()
+    path = None
+    argv = sys.argv
+    if '--' in argv:
+        rest = argv[argv.index('--') + 1:]
+        if rest:
+            path = rest[0]
+    if path is None:
+        here = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
+        cand = os.path.join(here, 'params.json')
+        if os.path.isfile(cand):
+            path = cand
+    if path and os.path.isfile(path):
+        f = open(path, 'r')
+        try:
+            user = json.load(f)
+        finally:
+            f.close()
+        deep_update(p, user)
+        print("[params] loaded from", path)
+    else:
+        print("[params] no JSON found, using built-in defaults")
+    return _to_str(p)
+
+
+# ================================================================== geometry
+def _cut(p, axis, off, tol=1e-6):
+    """Partition every cell that straddles a principal plane at 'off'."""
+    pp, idx = AX[axis]
+    dat = p.datums[p.DatumPlaneByPrincipalPlane(principalPlane=pp, offset=off).id]
+    sel = []
+    for c in p.cells:
+        b = p.cells[c.index:c.index + 1].getBoundingBox()
+        if b['low'][idx] < off - tol and b['high'][idx] > off + tol:
+            sel.append(c)
+    if sel:
+        p.PartitionCellByDatumPlane(datumPlane=dat, cells=sel)
+
+
+def build_shaft(m, sp):
+    """Cylinder + capsule keyway cut + root fillet."""
+    D = float(sp["D"]); R = D / 2.0; L = float(sp["L"])
+    b = float(sp["keyway_width"]); t = float(sp["keyway_depth"])
+    rc = float(sp["keyway_end_radius"])
+    c1 = float(sp["keyway_center1_z"]); dz = float(sp["keyway_center_distance"])
+    c2 = c1 + dz
+    yf = R - t
+    rr = float(sp["root_radius"])
+    name = "Shaft"
+
+    # blank cylinder along z
+    s = m.ConstrainedSketch(name='__cyl__', sheetSize=4.0 * D)
+    s.CircleByCenterPerimeter(center=(0.0, 0.0), point1=(R, 0.0))
+    bl = m.Part(name='__BLANK__', dimensionality=THREE_D, type=DEFORMABLE_BODY)
+    bl.BaseSolidExtrude(sketch=s, depth=L)
+    del m.sketches['__cyl__']
+
+    # capsule cutter (in local u-v, extruded through the shaft)
+    s2 = m.ConstrainedSketch(name='__cap__', sheetSize=4.0 * D)
+    s2.Line(point1=(-b / 2.0, c1), point2=(-b / 2.0, c2))
+    s2.Line(point1=(b / 2.0, c1), point2=(b / 2.0, c2))
+    s2.ArcByCenterEnds(center=(0.0, c2), point1=(b / 2.0, c2),
+                       point2=(-b / 2.0, c2), direction=COUNTERCLOCKWISE)
+    s2.ArcByCenterEnds(center=(0.0, c1), point1=(-b / 2.0, c1),
+                       point2=(b / 2.0, c1), direction=COUNTERCLOCKWISE)
+    ct = m.Part(name='__CUTTER__', dimensionality=THREE_D, type=DEFORMABLE_BODY)
+    ct.BaseSolidExtrude(sketch=s2, depth=D)
+    del m.sketches['__cap__']
+
+    a = m.rootAssembly
+    a.DatumCsysByDefault(CARTESIAN)
+    a.Instance(name='__B__', part=bl, dependent=ON)
+    a.Instance(name='__C__', part=ct, dependent=ON)
+    # rotate cutter 90 deg about x so its long axis lies along z (the keyway
+    # runs along the shaft), then lift it so the keyway floor sits exactly at yf
+    a.rotate(instanceList=('__C__',), axisPoint=(0.0, 0.0, 0.0),
+             axisDirection=(1.0, 0.0, 0.0), angle=90.0)
+    bb = a.instances['__C__'].cells.getBoundingBox()
+    a.translate(instanceList=('__C__',), vector=(0.0, yf - bb['low'][1], 0.0))
+
+    a.InstanceFromBooleanCut(name=name, instanceToBeCut=a.instances['__B__'],
+                             cuttingInstances=(a.instances['__C__'],),
+                             originalInstances=DELETE)
+    del m.parts['__BLANK__']
+    del m.parts['__CUTTER__']
+    # the boolean makes an orphan part 'name'; drop assembly instance for clean rebuild
+    if name + '-1' in a.instances:
+        del a.instances[name + '-1']
+
+    p = m.parts[name]
+    # root fillet on the four floor edges (two straight + two end arcs at y=yf)
+    if rr > 0:
+        fe = [e for e in p.edges if abs(e.pointOn[0][1] - yf) < 1e-4]
+        if fe:
+            try:
+                p.Round(radius=rr, edgeList=tuple(fe))
+            except Exception as ex:
+                print("[shaft] fillet warning:", str(ex)[:80])
+
+    # parametric partitions for hex sweeping
+    for off in (c1, c2):
+        _cut(p, 'z', off)
+    _cut(p, 'z', c1 - rc)          # keyway start tip
+    _cut(p, 'z', c2 + rc)          # keyway end tip
+    for off in (0.0, b / 2.0, -b / 2.0):
+        _cut(p, 'x', off)
+    _cut(p, 'y', yf)
+    for off in (R * 0.45, -R * 0.45):
+        _cut(p, 'x', off)
+    for off in (R * 0.45, -R * 0.45):
+        _cut(p, 'y', off)
+    return p
+
+
+def build_key(m, kp):
+    """Rectangle W x H with a straight 45-deg chamfer on all four corners."""
+    W = float(kp["width"]); H = float(kp["height"]); L = float(kp["length"])
+    y0 = float(kp["base_y"]); y1 = y0 + H
+    xw = W / 2.0
+    c = float(kp["chamfer"])
+    name = "Key"
+    if c > 0:
+        pts = [(-(xw - c), y0), ((xw - c), y0), (xw, y0 + c), (xw, y1 - c),
+               ((xw - c), y1), (-(xw - c), y1), (-xw, y1 - c), (-xw, y0 + c)]
+    else:
+        pts = [(-xw, y0), (xw, y0), (xw, y1), (-xw, y1)]
+    s = m.ConstrainedSketch(name='__key__', sheetSize=20.0 * max(W, H))
+    n = len(pts)
+    for i in range(n):
+        s.Line(point1=pts[i], point2=pts[(i + 1) % n])
+    p = m.Part(name=name, dimensionality=THREE_D, type=DEFORMABLE_BODY)
+    p.BaseSolidExtrude(sketch=s, depth=L)
+    del m.sketches['__key__']
+
+    # 12-cell frame partition (validated): y bands + x thirds
+    yb0 = y0 + max(c, 0.8); yb1 = y1 - max(c, 0.8)
+    _cut(p, 'y', yb0)
+    _cut(p, 'y', yb1)
+    for off in (0.0, (xw - max(c, 0.8)), -(xw - max(c, 0.8))):
+        _cut(p, 'x', off)
+    return p
+
+
+def build_revolved_annulus(m, name, length, r_in_small, r_in_large,
+                           r_out_small, r_out_large):
+    """Generic hollow (possibly conical) ring, axis along z, z in [0,length]."""
+    s = m.ConstrainedSketch(name='__ann__', sheetSize=20.0 * max(r_out_large, length))
+    # an explicit centerline is REQUIRED for BaseSolidRevolve to succeed
+    cl = s.ConstructionLine(point1=(0.0, 0.0), point2=(0.0, 1.0))
+    s.assignCenterline(line=cl)
+    # cross-section in (r, axial): outer then inner, closed. The revolve axis is
+    # the sketch Y axis, so the resulting solid has its axis along the part Y.
+    pts = [(r_in_small, 0.0), (r_out_small, 0.0),
+           (r_out_large, length), (r_in_large, length)]
+    for i in range(len(pts)):
+        s.Line(point1=pts[i], point2=pts[(i + 1) % len(pts)])
+    p = m.Part(name=name, dimensionality=THREE_D, type=DEFORMABLE_BODY)
+    p.BaseSolidRevolve(sketch=s, angle=360.0, flipRevolveDirection=OFF)
+    del m.sketches['__ann__']
+    return p
+
+
+def build_bushing(m, bp):
+    """Tapered bushing with a keyway groove cut on the bore side."""
+    L = float(bp["length"])
+    ri = float(bp["bore_diameter"]) / 2.0
+    ro0 = float(bp["outer_dia_small"]) / 2.0
+    ro1 = float(bp["outer_dia_large"]) / 2.0
+    gw = float(bp["groove_width"])
+    gf = float(bp["groove_floor_y"])
+    gr = float(bp["groove_roof_y"])
+    name = "Bushing"
+    # axis along part Y, radial in x-z. Groove is cut on the +Z side of the bore
+    # so that, after the assembly rotation (-90 deg about x), it faces +Y (the key).
+    p = build_revolved_annulus(m, name, L, ri, ri, ro0, ro1)
+
+    # groove cutter: a box x in [-gw/2, gw/2], y in [0, L] (full length),
+    # extruded along +Z up to the groove roof radius. Material below the bore
+    # radius is void, so this leaves a clean top slot of depth (gr - bore).
+    a = m.rootAssembly
+    s = m.ConstrainedSketch(name='__grv__', sheetSize=20.0 * ro1)
+    s.rectangle(point1=(-gw / 2.0, 0.0), point2=(gw / 2.0, L))
+    ct = m.Part(name='__GRV__', dimensionality=THREE_D, type=DEFORMABLE_BODY)
+    ct.BaseSolidExtrude(sketch=s, depth=gr)
+    del m.sketches['__grv__']
+    a.Instance(name='__BU__', part=p, dependent=ON)
+    a.Instance(name='__GV__', part=ct, dependent=ON)
+    a.InstanceFromBooleanCut(name='__BU_CUT__',
+                             instanceToBeCut=a.instances['__BU__'],
+                             cuttingInstances=(a.instances['__GV__'],),
+                             originalInstances=DELETE)
+    del m.parts['__GRV__']
+    del m.parts[name]
+    m.parts.changeKey(fromName='__BU_CUT__', toName=name)
+    for inst in list(a.instances.keys()):
+        del a.instances[inst]
+    p = m.parts[name]
+
+    # partitions: quadrants (x=0, z=0) plus the groove side walls (x=+/-gw/2)
+    for off in (0.0, gw / 2.0, -gw / 2.0):
+        _cut(p, 'x', off)
+    _cut(p, 'z', 0.0)
+    _cut(p, 'z', ri)               # bore surface, isolates the groove band
+    return p
+
+
+def build_hub(m, hp):
+    """Conical hub: outer cylinder, conical bore, axis along z."""
+    L = float(hp["length"])
+    ro = float(hp["outer_diameter"]) / 2.0
+    ri0 = float(hp["bore_small"]) / 2.0
+    ri1 = float(hp["bore_large"]) / 2.0
+    name = "Hub"
+    # axis along part Y (rotated to Z in the assembly), radial in x-z
+    p = build_revolved_annulus(m, name, L, ri0, ri1, ro, ro)
+    # quadrant partitions for sweeping
+    _cut(p, 'x', 0.0)
+    _cut(p, 'z', 0.0)
+    return p
+
+
+# ================================================================== meshing
+def robust_mesh(p, seed, quadratic=True, ar_threshold=20.0):
+    """Mesh a part so that it ALWAYS produces elements.
+    Try hex Structured -> hex Sweep(medial) -> hex Sweep(adv) per cell,
+    then fall back to free tet for any cell that stays empty. Finally, re-mesh
+    (as tet) any cell that still owns a failed or very distorted element.
+    Returns a dict with the element histogram and quality."""
+    p.deleteMesh()
+    try:
+        p.deleteSeeds(regions=p.edges)
+    except Exception:
+        pass
+    for c in p.cells:
+        done = False
+        for kw in (dict(elemShape=HEX, technique=STRUCTURED),
+                   dict(elemShape=HEX, technique=SWEEP, algorithm=MEDIAL_AXIS),
+                   dict(elemShape=HEX, technique=SWEEP, algorithm=ADVANCING_FRONT)):
+            try:
+                p.setMeshControls(regions=(c,), **kw)
+                done = True
+                break
+            except Exception:
+                continue
+        if not done:
+            try:
+                p.setMeshControls(regions=(c,), elemShape=TET, technique=FREE)
+            except Exception:
+                pass
+    p.seedPart(size=seed, deviationFactor=0.1, minSizeFactor=0.1)
+    # element types
+    if quadratic:
+        hexT = ElemType(elemCode=C3D20R, elemLibrary=STANDARD)
+        tetT = ElemType(elemCode=C3D10M, elemLibrary=STANDARD)
+    else:
+        hexT = ElemType(elemCode=C3D8R, elemLibrary=STANDARD)
+        tetT = ElemType(elemCode=C3D4, elemLibrary=STANDARD)
+    p.setElementType(regions=(p.cells,), elemTypes=(hexT, tetT))
+    p.generateMesh()
+
+    # any empty cell -> force tet and remesh
+    empty = []
+    for c in p.cells:
+        try:
+            if p.getMeshStats(regions=(c,)).numHexElems == 0 and \
+               p.getMeshStats(regions=(c,)).numTetElems == 0 and \
+               p.getMeshStats(regions=(c,)).numWedgeElems == 0:
+                empty.append(c)
+        except Exception:
+            pass
+    if empty:
+        p.setMeshControls(regions=tuple(empty), elemShape=TET, technique=FREE)
+        p.setElementType(regions=(p.cells,), elemTypes=(hexT, tetT))
+        p.generateMesh()
+
+    # repair pass: any cell that still owns a FAILED element, or an element whose
+    # aspect ratio exceeds ar_threshold (collapsed hex at fillet/cap corners), is
+    # re-meshed as free tet. The rest stays hex. This drives analysis-check
+    # failures to zero AND cuts the worst aspect ratio, even off-nominal.
+    thr = float(ar_threshold or 0.0)
+    for _attempt in range(3):
+        bad_labels = set(e.label for e in
+                         p.verifyMeshQuality(criterion=ANALYSIS_CHECKS)['failedElements'])
+        if thr > 0:
+            try:
+                arbad = p.verifyMeshQuality(criterion=ASPECT_RATIO, threshold=thr)
+                bad_labels |= set(e.label for e in arbad.get('failedElements', []))
+            except Exception:
+                pass
+        if not bad_labels:
+            break
+        bad = []
+        for c in p.cells:
+            try:
+                s = p.Set(name='__probe__', cells=p.cells[c.index:c.index + 1])
+                labs = set(e.label for e in s.elements)
+                del p.sets['__probe__']
+            except Exception:
+                labs = set()
+                if '__probe__' in p.sets:
+                    del p.sets['__probe__']
+            if labs & bad_labels:
+                bad.append(c)
+        if not bad:
+            break
+        p.setMeshControls(regions=tuple(bad), elemShape=TET, technique=FREE)
+        p.setElementType(regions=(p.cells,), elemTypes=(hexT, tetT))
+        p.generateMesh()
+
+    hist = {}
+    for e in p.elements:
+        hist[str(e.type)] = hist.get(str(e.type), 0) + 1
+    return hist
+
+
+def mesh_quality(p):
+    ac = p.verifyMeshQuality(criterion=ANALYSIS_CHECKS)
+    ar = p.verifyMeshQuality(criterion=ASPECT_RATIO)
+    return (len(ac['failedElements']), len(ac['warningElements']),
+            ar.get('worst'), ar.get('average'))
+
+
+def connected_components(p):
+    par = {}
+
+    def find(x):
+        r = x
+        while par[r] != r:
+            r = par[r]
+        while par[x] != r:
+            par[x], x = r, par[x]
+        return r
+    for e in p.elements:
+        c = e.connectivity[:8]
+        for n in c:
+            par.setdefault(n, n)
+        root = find(c[0])
+        for n in c[1:]:
+            b = find(n)
+            if root != b:
+                par[b] = root
+    return len(set(find(k) for k in par))
+
+
+# ================================================================== assembly
+def assign_section(m, part, section_name):
+    p = m.parts[part]
+    p.SectionAssignment(region=regionToolset.Region(cells=p.cells),
+                        sectionName=section_name, offset=0.0,
+                        offsetType=MIDDLE_SURFACE, offsetField='',
+                        thicknessAssignment=FROM_SECTION)
+
+
+def build_all(params):
+    # compute the effective parameters and reflect them back into the caller's
+    # dict IN PLACE, so the audit and save see the real (sanitised + DIN) values
+    eff = _to_str(params)
+    if eff.get("auto_din"):
+        apply_din6885(eff)
+    try:
+        params.clear()
+        params.update(eff)
+    except Exception:
+        params = eff
+    name = str(params["model_name"])
+    if name in mdb.models:
+        del mdb.models[name]
+    m = mdb.Model(name=name)
+    quad = (str(params.get("element_order", "quadratic")).lower() != "linear")
+
+    # ---- materials & sections
+    mm = params["materials"]
+    for mat in ("C45N", "C45QT_KEY"):
+        ma = m.Material(name=mat)
+        ma.Elastic(table=((mm["steel_E"], mm["steel_nu"]),))
+        ma.Density(table=((mm["steel_density"],),))
+    m.HomogeneousSolidSection(name="C45N_SECTION", material="C45N", thickness=None)
+    m.HomogeneousSolidSection(name="C45QT_KEY_SECTION", material="C45QT_KEY", thickness=None)
+
+    # ---- geometry
+    print("[build] shaft ...");   sh = build_shaft(m, params["shaft"])
+    print("[build] key ...");     ky = build_key(m, params["key"])
+    print("[build] bushing ..."); bu = build_bushing(m, params["bushing"])
+    print("[build] hub ...");     hu = build_hub(m, params["hub"])
+
+    assign_section(m, "Shaft", "C45N_SECTION")
+    assign_section(m, "Key", "C45QT_KEY_SECTION")
+    assign_section(m, "Bushing", "C45N_SECTION")
+    assign_section(m, "Hub", "C45N_SECTION")
+
+    # ---- mesh
+    thr = float(params.get("ar_repair_threshold", 20.0))
+    report = {}
+    print("[mesh] shaft ...");   report["Shaft"] = robust_mesh(sh, params["shaft"]["seed"], quad, thr)
+    print("[mesh] key ...");     report["Key"] = robust_mesh(ky, params["key"]["seed"], quad, thr)
+    print("[mesh] bushing ..."); report["Bushing"] = robust_mesh(bu, params["bushing"]["seed"], quad, thr)
+    print("[mesh] hub ...");     report["Hub"] = robust_mesh(hu, params["hub"]["seed"], quad, thr)
+
+    # ---- assembly
+    a = m.rootAssembly
+    for inst in list(a.instances.keys()):
+        del a.instances[inst]
+    R = float(params["shaft"]["D"]) / 2.0
+    c1 = float(params["shaft"]["keyway_center1_z"])
+    a.Instance(name="SHAFT-1", part=sh, dependent=ON)
+    a.Instance(name="KEY-1", part=ky, dependent=ON)
+    a.translate(instanceList=("KEY-1",), vector=(0.0, 0.0, c1))
+    a.Instance(name="BUSHING-1", part=bu, dependent=ON)
+    a.Instance(name="HUB-1", part=hu, dependent=ON)
+    # bushing and hub are revolved about their Y axis; rotate them -90 deg about
+    # x so their bore axis lies along z (over the shaft) and the groove faces +y
+    for nm in ("BUSHING-1", "HUB-1"):
+        a.rotate(instanceList=(nm,), axisPoint=(0.0, 0.0, 0.0),
+                 axisDirection=(1.0, 0.0, 0.0), angle=-90.0)
+    # align their axial centre with the key centre along z
+    kb = a.instances["KEY-1"].nodes.getBoundingBox()
+    keymid = 0.5 * (kb['low'][2] + kb['high'][2])
+    for nm in ("BUSHING-1", "HUB-1"):
+        ib = a.instances[nm].nodes.getBoundingBox()
+        mid = 0.5 * (ib['low'][2] + ib['high'][2])
+        a.translate(instanceList=(nm,), vector=(0.0, 0.0, keymid - mid))
+    a.regenerate()
+
+    # ---- sets
+    pairs = (("SHAFT", "SHAFT-1"), ("KEY", "KEY-1"),
+             ("BUSHING", "BUSHING-1"), ("HUB", "HUB-1"))
+    for tag, inst in pairs:
+        for s in ("ALL_%s_NODES" % tag, "ALL_%s_ELEMENTS" % tag):
+            if s in a.sets:
+                del a.sets[s]
+        a.Set(name="ALL_%s_NODES" % tag, nodes=a.instances[inst].nodes)
+        a.Set(name="ALL_%s_ELEMENTS" % tag, elements=a.instances[inst].elements)
+
+    return m, report
+
+
+# ================================================================== audit + io
+def write_audit(m, report, params, out_dir):
+    lines = []
+
+    def W(s):
+        lines.append(s)
+        print(s)
+    def _keys(obj, attr):
+        try:
+            return list(getattr(obj, attr).keys())
+        except Exception:
+            return []
+    W("PARAMETRIC BUILD AUDIT")
+    W("model: %s" % m.name)
+    W("element_order: %s" % params.get("element_order"))
+    W("steps=%s jobs=%s constraints=%s interactions=%s" % (
+        _keys(m, 'steps'), _keys(mdb, 'jobs'),
+        _keys(m, 'constraints'), _keys(m, 'interactions')))
+    W("")
+    tot_n = 0
+    tot_e = 0
+    ok = True
+    for pn in ("Shaft", "Key", "Bushing", "Hub"):
+        p = m.parts[pn]
+        failed, warn, arw, ara = mesh_quality(p)
+        nc = connected_components(p)
+        bb = p.cells.getBoundingBox()
+        tot_n += len(p.nodes)
+        tot_e += len(p.elements)
+        if failed > 0 or nc != 1:
+            ok = False
+        W("PART %s" % pn)
+        W("   nodes=%d elements=%d types=%s" % (len(p.nodes), len(p.elements), report.get(pn)))
+        W("   bbox_size=%s" % [round(bb['high'][i] - bb['low'][i], 4) for i in range(3)])
+        W("   failed=%d warnings=%d aspectRatio worst=%s avg=%s components=%d" % (
+            failed, warn, arw, ara, nc))
+    W("")
+    W("TOTAL nodes=%d elements=%d" % (tot_n, tot_e))
+    a = m.rootAssembly
+    W("SETS: %s" % sorted(a.sets.keys()))
+
+    # ---- fit / clearance checks (analytic, from parameters) ----
+    W("")
+    W("FIT / CLEARANCE CHECKS")
+    sh = params["shaft"]; ky = params["key"]; bu = params["bushing"]; hu = params["hub"]
+    R = sh["D"] / 2.0
+    checks = []
+    # shaft must fit inside the bushing bore
+    bore_gap = bu["bore_diameter"] / 2.0 - R
+    checks.append(("shaft OD vs bushing bore", bore_gap, 0.0, "gap>=0 (0=line-to-line)"))
+    # key seated on keyway floor
+    floor_mismatch = ky["base_y"] - (R - sh["keyway_depth"])
+    checks.append(("key base vs keyway floor", floor_mismatch, None, "should be ~0"))
+    # key flanks vs keyway / groove widths
+    checks.append(("shaft keyway flank/side", (sh["keyway_width"] - ky["width"]) / 2.0,
+                   0.0, ">=0"))
+    checks.append(("bushing groove flank/side", (bu["groove_width"] - ky["width"]) / 2.0,
+                   0.0, ">=0"))
+    # key top clearance under the groove roof
+    top_gap = bu["groove_roof_y"] - (ky["base_y"] + ky["height"])
+    checks.append(("key top vs groove roof", top_gap, 0.0, "gap>=0"))
+    # bushing must fit inside the hub bore (small end)
+    hub_gap = hu["bore_small"] / 2.0 - bu["outer_dia_small"] / 2.0
+    checks.append(("bushing OD vs hub bore (small)", hub_gap, 0.0, ">=0 (0=cone mate)"))
+    all_ok = True
+    for label, val, lo, note in checks:
+        flag = "ok"
+        if lo is not None and val < -1e-6:
+            flag = "FAIL"; all_ok = False
+        elif lo is None and abs(val) > 1e-3:
+            flag = "WARN"
+        W("   %-32s % .4f mm  [%s] %s" % (label, val, flag, note))
+    if not all_ok:
+        ok = False
+
+    W("")
+    W("VERDICT: %s" % ("OK (all parts meshed, failed=0, single component, fits ok)"
+                       if ok else "CHECK (mesh failure, disconnection or interference)"))
+    W("NOTE: NOJOB model - no contact, step, load, BC or job defined.")
+    txt = "\n".join(lines) + "\n"
+    if out_dir:
+        try:
+            f = open(os.path.join(out_dir, "PARAM_BUILD_AUDIT.txt"), "w")
+            f.write(txt)
+            f.close()
+        except Exception as ex:
+            print("[audit] could not write file:", str(ex)[:80])
+    return ok
+
+
+def resolve_out_dir(params):
+    out = params.get("output_dir", "") or ""
+    if not out:
+        out = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
+    if not os.path.isdir(out):
+        try:
+            os.makedirs(out)
+        except Exception:
+            out = os.getcwd()
+    return out
+
+
+def render_preview(m, out_dir, name):
+    """Render an isometric PNG of the meshed assembly next to the CAE."""
+    try:
+        vps = session.viewports
+        if vps.keys():
+            vp = vps[vps.keys()[0]]
+        else:
+            vp = session.Viewport(name='preview', origin=(0, 0), width=200, height=150)
+        vp.setValues(displayedObject=m.rootAssembly)
+        vp.assemblyDisplay.setValues(mesh=ON, optimizationTasks=OFF,
+                                     geometricRestrictions=OFF, stopConditions=OFF)
+        session.printOptions.setValues(vpDecorations=OFF, vpBackground=OFF,
+                                       reduceColors=False)
+        session.pngOptions.setValues(imageSize=(1600, 1200))
+        vp.view.setValues(session.views['Iso'])
+        vp.view.fitView()
+        png = os.path.join(out_dir, name + '_preview')
+        session.printToFile(fileName=png, format=PNG, canvasObjects=(vp,))
+        print('[preview] wrote', png + '.png')
+        return png + '.png'
+    except Exception as e:
+        print('[preview] skipped:', str(e))
+        return None
+
+
+def main():
+    params = load_params()
+    out_dir = str(resolve_out_dir(params))
+    m, report = build_all(params)
+
+    # save FIRST so a non-critical audit issue can never lose the model
+    if params.get("save_cae", True):
+        cae = str(os.path.join(out_dir, str(params["model_name"]) + ".cae"))
+        mdb.saveAs(pathName=cae)
+        print("[save] CAE written to", cae)
+
+    try:
+        ok = write_audit(m, report, params, out_dir)
+    except Exception as e:
+        print("[audit] skipped due to:", str(e))
+        ok = None
+
+    if params.get("make_preview", True):
+        render_preview(m, out_dir, str(params["model_name"]))
+
+    print("[done] build finished, verdict OK =", ok)
+
+
+if __name__ == '__main__':
+    main()

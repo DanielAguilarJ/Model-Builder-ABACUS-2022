@@ -1,0 +1,185 @@
+{
+  "build_environment": {
+    "platform": "Windows-10-10.0.14393-SP0",
+    "pyinstaller": "6.22.2",
+    "python": "3.12.0",
+    "python_architecture": "64bit",
+    "source_revision": "unrecorded-local"
+  },
+  "build_provenance": {
+    "hash_algorithm": "sha256",
+    "packaged_executable": {
+      "path": "ModelBuilder.exe",
+      "sha256": "0cd811fbbec4f4a362d5994f2a6f43531e081a20c4f20d4a7b6d7195bae1793b",
+      "size_bytes": 11547573
+    },
+    "snapshot_created_at_utc": "2026-09-11T10:09:40+00:00",
+    "source_inputs": [
+      {
+        "path": "parametric_builder/abaqus_runner.py",
+        "sha256": "b872ed1beece729df97c23bfca181abe0990034506e9d7834eed60e38a482b81",
+        "size_bytes": 6860
+      },
+      {
+        "path": "parametric_builder/build_parametric_model.py",
+        "sha256": "4fccae87246dc9fc5a149fe536db3b26c58df5fe329a100dd885bd5946b76fcd",
+        "size_bytes": 122269
+      },
+      {
+        "path": "parametric_builder/fva600_d40_v3_nojob.py",
+        "sha256": "a0c0062caad69233ef7a8bf088f102ac4ac508ff36bf7a95eefc57ca3b186a65",
+        "size_bytes": 47386
+      },
+      {
+        "path": "parametric_builder/keyjoint_core.py",
+        "sha256": "3ab70a9ff957a09f1a21de1a2a1e001f9741b8e2660f450fc216726f18c98574",
+        "size_bytes": 88133
+      },
+      {
+        "path": "parametric_builder/make_exe.bat",
+        "sha256": "f4ac918347f707450882e9176d9267e522e6dc16f83c75e66b767b361c1f1e18",
+        "size_bytes": 4396
+      },
+      {
+        "path": "parametric_builder/make_release.py",
+        "sha256": "a5d22d493ae0e55daae3b0ea50d15d1aef392008e5dc6c08147bd997ed0bf0d6",
+        "size_bytes": 15526
+      },
+      {
+        "path": "parametric_builder/model_builder_gui.py",
+        "sha256": "19ce77f922ef0b8ebfcb998228517e43ad281199ba05d822428eeae3a73b60e2",
+        "size_bytes": 65986
+      },
+      {
+        "path": "parametric_builder/ModelBuilder.spec",
+        "sha256": "1e303f1b2c16f1f03693875cf048040edf7700531678750e3ec6301f385836f3",
+        "size_bytes": 1603
+      },
+      {
+        "path": "parametric_builder/params_default.json",
+        "sha256": "d1b9dfbaf5e2be87ea75b40f365148b864d70e8a3dd8f8b6edeca3aa3768c0a2",
+        "size_bytes": 3668
+      },
+      {
+        "path": "parametric_builder/params_fva600_research_presolve_1lw.json",
+        "sha256": "000932d002aef92a537686c6e609bf545fec586d3c47d0a60f7a042b4cf7edea",
+        "size_bytes": 1114
+      },
+      {
+        "path": "parametric_builder/project_workspace.py",
+        "sha256": "7763defc29d4cf301196cc8e6da1fc9f29df4ddc0b88810a73a561d39123747c",
+        "size_bytes": 9647
+      },
+      {
+        "path": "parametric_builder/README.md",
+        "sha256": "3f1d4f890d0e953f1dcdd28f39fb16d76c965b4448a21b6b7a3ec9b0de3e8dec",
+        "size_bytes": 15057
+      },
+      {
+        "path": "parametric_builder/report_generator.py",
+        "sha256": "7f5b0aa43bb255946aaa43a07a5718158d0afed0b6ac72eff5f5aec559a37ab4",
+        "size_bytes": 23595
+      },
+      {
+        "path": "parametric_builder/report_template.tex",
+        "sha256": "f65efc2b677411317566b99c505c21cba7d03c5d493af65c2120ce294246d669",
+        "size_bytes": 445
+      },
+      {
+        "path": "parametric_builder/technical_contract.json",
+        "sha256": "962dbc20c3846b088e719a7eb143cd5fca6abea7f71f2e465ee04968b1a2b13b",
+        "size_bytes": 5155
+      },
+      {
+        "path": "parametric_builder/TECHNICAL_TRACEABILITY.md",
+        "sha256": "783101cee74b6c3845ede635bf9a69fbb13bcf4d0244f991bcb498d0004a45ef",
+        "size_bytes": 7455
+      },
+      {
+        "path": "parametric_builder/version_info.txt",
+        "sha256": "b87882d7e223355df44dffb662ecf7ed4df3bcdee96242a568b6bd603ef6dfb7",
+        "size_bytes": 815
+      },
+      {
+        "path": "sources/shaft_with_keywayyt.py",
+        "sha256": "333dc6cbff1195f75bb9447c689818b66395432fb1c4880a52f0b1b67aeeb4c7",
+        "size_bytes": 211110
+      },
+      {
+        "path": "src/d40_hex_conical_master.py",
+        "sha256": "cc24c5a6f13cd19414a2d51f65796841bbff0c0bd19193de52076aa859011358",
+        "size_bytes": 60760
+      },
+      {
+        "path": "src/d40_hex_conical_master_v3_refined_hex_nojob.py",
+        "sha256": "ca2760d11f83ec67a3967bad09e11058e0866535ae384c56e59a458f0f1e7cd5",
+        "size_bytes": 45604
+      }
+    ],
+    "verified_unchanged_after_build": true
+  },
+  "created_at_utc": "2026-09-11T10:10:07+00:00",
+  "distribution_policy": {
+    "abaqus_and_latex_not_bundled": true,
+    "historical_dist_not_read_or_modified": true,
+    "licensed_din_fva_documents_not_bundled": true,
+    "run_specific_validation_artifacts_not_bundled": true,
+    "whitelist_only": true
+  },
+  "files": [
+    {
+      "path": "ModelBuilder.exe",
+      "sha256": "0cd811fbbec4f4a362d5994f2a6f43531e081a20c4f20d4a7b6d7195bae1793b",
+      "size_bytes": 11547573
+    },
+    {
+      "path": "params_default.json",
+      "sha256": "d1b9dfbaf5e2be87ea75b40f365148b864d70e8a3dd8f8b6edeca3aa3768c0a2",
+      "size_bytes": 3668
+    },
+    {
+      "path": "params_fva600_research_presolve_1lw.json",
+      "sha256": "000932d002aef92a537686c6e609bf545fec586d3c47d0a60f7a042b4cf7edea",
+      "size_bytes": 1114
+    },
+    {
+      "path": "README.md",
+      "sha256": "3f1d4f890d0e953f1dcdd28f39fb16d76c965b4448a21b6b7a3ec9b0de3e8dec",
+      "size_bytes": 15057
+    },
+    {
+      "path": "technical_contract.json",
+      "sha256": "962dbc20c3846b088e719a7eb143cd5fca6abea7f71f2e465ee04968b1a2b13b",
+      "size_bytes": 5155
+    },
+    {
+      "path": "TECHNICAL_TRACEABILITY.md",
+      "sha256": "783101cee74b6c3845ede635bf9a69fbb13bcf4d0244f991bcb498d0004a45ef",
+      "size_bytes": 7455
+    }
+  ],
+  "manifest_schema": 2,
+  "parameter_schema": 5,
+  "product": "Model Builder",
+  "product_version": "4.1",
+  "validation": {
+    "abaqus_integration": {
+      "cases": [
+        "D40 Form A AUTO_BALANCED linear NOJOB",
+        "D25 Form B AUTO_BALANCED linear NOJOB",
+        "D50 Form AB QUADRATIC_ACCURACY NOJOB",
+        "D40 tapered FAST_PREVIEW with Bushing NOJOB"
+      ],
+      "evidence_bundled": false,
+      "limitation": "Run-specific CAE/audits are excluded from the release; this manifest does not claim a solved stress verification",
+      "runtime": "Abaqus 2022 / Python 2.7",
+      "status": "separately-validated"
+    },
+    "packaged_self_test": {
+      "elapsed_seconds": 4.968,
+      "return_code": 0,
+      "scope": "Model Builder 4.1/schema 5 identity; six versioned mesh templates; deterministic ranking; realised element-profile validation; packaged engine/core/defaults/contract resources and DIN table. Does not start Abaqus or compile LaTeX",
+      "status": "passed"
+    }
+  }
+}

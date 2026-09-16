@@ -1,0 +1,26 @@
+PARAMETRIC BUILD AUDIT
+model: PARAM_MODEL
+element_order: quadratic
+steps=['Initial'] jobs=[] constraints=[] interactions=[]
+
+PART Shaft
+   nodes=533784 elements=128100 types={'C3D20R': 126902, 'C3D10M': 1198}
+   bbox_size=[50.0, 50.0, 120.0]
+   failed=2 warnings=1947 aspectRatio worst=117.460159302 avg=1.60731434822 components=1
+PART Key
+   nodes=149202 elements=34602 types={'C3D20R': 34602}
+   bbox_size=[12.0, 8.0, 38.0]
+   failed=0 warnings=0 aspectRatio worst=3.0000231266 avg=1.13726627827 components=1
+PART Bushing
+   nodes=425487 elements=98658 types={'C3D20R': 98658}
+   bbox_size=[63.8, 38.0, 63.8]
+   failed=5 warnings=397 aspectRatio worst=5.03022480011 avg=1.247641325 components=1
+PART Hub
+   nodes=332420 elements=75240 types={'C3D20R': 75240}
+   bbox_size=[80.0, 38.0, 80.0]
+   failed=0 warnings=0 aspectRatio worst=1.29686486721 avg=1.1227697134 components=1
+
+TOTAL nodes=1440893 elements=336600
+SETS: ['ALL_BUSHING_ELEMENTS', 'ALL_BUSHING_NODES', 'ALL_HUB_ELEMENTS', 'ALL_HUB_NODES', 'ALL_KEY_ELEMENTS', 'ALL_KEY_NODES', 'ALL_SHAFT_ELEMENTS', 'ALL_SHAFT_NODES']
+VERDICT: CHECK (a part failed or is disconnected)
+NOTE: NOJOB model - no contact, step, load, BC or job defined.

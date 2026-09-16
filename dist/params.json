@@ -1,0 +1,47 @@
+{
+  "model_name": "PARAM_MODEL",
+  "output_dir": "C:\\simulations\\D40_HEX_CONICAL_KRESINSKY_V1\\parametric_builder\\dist",
+  "save_cae": true,
+  "element_order": "quadratic",
+  "shaft": {
+    "D": 50.0,
+    "L": 120.0,
+    "keyway_width": 12.0,
+    "keyway_depth": 5.0,
+    "keyway_end_radius": 6.0,
+    "keyway_center1_z": 17.0,
+    "keyway_center_distance": 38.0,
+    "root_radius": 0.25,
+    "seed": 1.2
+  },
+  "key": {
+    "width": 12.0,
+    "height": 8.0,
+    "length": 38.0,
+    "base_y": 20.0,
+    "chamfer": 0.8,
+    "seed": 0.48
+  },
+  "bushing": {
+    "length": 38.0,
+    "bore_diameter": 40.0,
+    "outer_dia_small": 60.0,
+    "outer_dia_large": 63.8,
+    "groove_width": 12.0215,
+    "groove_floor_y": 18.0,
+    "groove_roof_y": 23.3,
+    "seed": 0.9
+  },
+  "hub": {
+    "outer_diameter": 80.0,
+    "length": 38.0,
+    "bore_small": 60.0,
+    "bore_large": 63.8,
+    "seed": 1.0
+  },
+  "materials": {
+    "steel_E": 210000.0,
+    "steel_nu": 0.3,
+    "steel_density": 7.85e-09
+  }
+}

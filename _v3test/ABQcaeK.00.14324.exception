@@ -1,0 +1,33 @@
+<Description>
+   ABAQUS/ABQcaeK rank 0 encountered a SEGMENTATION FAULT
+
+</Description>
+
+<Context>
+   CAE
+</Context>
+
+<Callstack>
+  1)  KERNELBASE.dll              RaiseException                          
+  2)  VCRUNTIME140_1.dll        unknown                                 
+</Callstack>
+
+<Memory>
+   <Current>            2285 MB </Current>
+   <Resident>           2042 MB </Resident>
+   <Physical>          32720 MB </Physical>
+   <Limit>                 0 MB </Limit>
+   <Accessible>        32720 MB </Accessible>
+   <Allocator>            DL    </Allocator>
+</Memory>
+
+<Directories>
+  <current> c:\simulations\D40_HEX_CONICAL_KRESINSKY_V1\parametric_builder\_v3test </current> <free>     25 GB </free>   <used>    440 GB </used> 
+     <temp> C:\Users\keag\AppData\Local\Temp </temp>    <free>     25 GB </free>
+</Directories>
+
+<Installation>
+     <Version> 2022 6.22-1 </Version>
+       <Build> 2021_09_15-19.57.30 176069 </Build>
+</Installation>
+
