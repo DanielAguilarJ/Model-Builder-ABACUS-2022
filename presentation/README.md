@@ -11,6 +11,19 @@ Two decks, same 39 slides, same layout, built from one source.
 machine. The Spanish deck is kept deliberately: it is the study copy for
 rehearsing the talk, and both stay in step because they are generated together.
 
+## Rehearsal and defense package
+
+| File | Use |
+|---|---|
+| `PRESENTATION_SCRIPT_EN_ES.md` | Spoken script for all 39 slides: English delivery, Spanish meaning, transition, timing and anchor |
+| `SUPERVISOR_QA_EN_ES.md` | 69 likely supervisor questions with defensible bilingual answers and phrases not to claim |
+| `REHEARSAL_CHEAT_SHEET_EN_ES.md` | What to memorize: opening, closing, numbers, pronunciation, recovery phrases and timing |
+| `tools/verify_rehearsal.py` | Rebuild-time audit of document structure, stale claims, code-derived values, Method A/MATLAB contracts and release facts |
+
+The recommended sequence is: study the slide meaning in Spanish, practise the English
+anchor for every slide, then use the complete English script without reading it word for
+word. Finish by answering the Q&A bank aloud in random order.
+
 ## Slide guide
 
 | # | Slide | Content |
@@ -80,6 +93,7 @@ for LANG in es en; do
 done
 python3 tools/check_figures.py diagrams           # fail on clipped figures
 python3 tools/check_figures.py diagrams_en
+(cd .. && python3 presentation/tools/verify_rehearsal.py)  # from presentation/
 ```
 
 Screenshots need a display:

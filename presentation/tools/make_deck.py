@@ -435,21 +435,23 @@ def slide_verificacion(prs, index):
     left_items = [
         (L("Autotest empaquetado", "Packaged self-test"),
          L("identidad 4.2 y esquema 6, migración 5→6, catálogos DIN y FVA, "
-           "cálculos de referencia, seis plantillas de malla, informes en los "
+           "cálculos de referencia, ocho plantillas de malla, informes en los "
            "tres idiomas. Termina con código 0.",
            "4.2 identity and schema 6, the 5→6 migration, DIN and FVA "
-           "catalogues, golden calculations, six mesh templates, reports in "
+           "catalogues, golden calculations, eight mesh templates, reports in "
            "all three languages. Exits with code 0.")),
         (L("Paridad de los tres catálogos", "Parity across the three catalogues"),
          L("650 claves por idioma, sin huecos; cada código de validación tiene "
            "su presentación traducida.",
            "650 keys per language with no gaps; every validation code has its "
            "translated presentation.")),
-        (L("Los cuatro presets", "All four presets"),
-         L("normalizan y validan con esquema 6 y cero errores, incluido el de "
-           "resolución de 10 ciclos.",
-           "normalize and validate under schema 6 with zero errors, including "
-           "the 10-cycle solving one.")),
+        (L("Configuraciones vigiladas", "Guarded configurations"),
+         L("los valores por defecto y los dos compañeros FVA empaquetados se "
+           "validan bajo esquema 6. La configuración de 10 ciclos del "
+           "repositorio se valida por separado y no se empaqueta.",
+           "the defaults and the two packaged FVA companions validate under "
+           "schema 6. The repository's 10-cycle setup is validated separately "
+           "and is not packaged.")),
     ]
     right_items = [
         (L("Compatibilidad con el kernel", "Compatibility with the kernel"),
@@ -460,12 +462,12 @@ def slide_verificacion(prs, index):
            "f-strings, no annotations, only os, sys, json, math, time and "
            "hashlib. Division imported from __future__.")),
         (L("Contrato de artefactos", "Artifact contract"),
-         L("el proyecto se declara correcto sólo si existen auditoría, "
-           "BUILD_RESULT, CAE, capturas e informe, y si la malla realizada "
-           "coincide con la planificada.",
-           "a project is declared sound only if the audit, BUILD_RESULT, CAE, "
-           "screenshots and report all exist, and the realised mesh matches "
-           "the planned one.")),
+         L("el proyecto se declara correcto sólo si existen la auditoría, "
+           "BUILD_RESULT y todos los artefactos solicitados o requeridos, y si "
+           "la malla realizada coincide con la planificada.",
+           "a project is declared sound only if the audit, BUILD_RESULT and all "
+           "requested or required artifacts exist, and the realised mesh "
+           "matches the planned one.")),
         (L("Cifras fijadas en el test", "Figures locked in the test"),
          L("999,18 N·m gobernado por el cubo, t2tr = 3,141 mm, f_W de la "
            "ecuación 3 y el dominio de K_λ.",
@@ -511,10 +513,12 @@ def slide_pasos(prs, index):
            "changed.")),
         ("02", L("Fijar el signo de la ecuación 9",
                  "Settle the sign of equation 9"),
-         L("contra el texto DIN 6892 con licencia. Si el signo negativo es el "
-           "correcto, el par admisible real baja otro 46 %.",
-           "against the licensed DIN 6892 text. If the minus sign is right, "
-           "the real allowable torque drops another 46 %.")),
+         L("contra el texto DIN 6892 con licencia. El signo cambia un 46,35 % "
+           "la profundidad y el componente del eje; en el D40 por defecto el "
+           "cubo sigue gobernando a 999,18 N·m.",
+           "against the licensed DIN 6892 text. The sign changes the shaft "
+           "depth and shaft component by 46.35%; in the bundled D40 default, "
+           "the hub still governs at 999.18 N·m.")),
         ("03", L("Numerar la versión", "Number the version"),
          L("dos ejecutables que se identifican como 4.2 y devuelven pares "
            "distintos son una colisión de identidad. Mi recomendación es 4.3.",
@@ -557,10 +561,10 @@ def slide_cierre(prs, index):
                    "Model Builder 4.2  ·  parameter schema 6  ·  "
                    "din6892-methods-1.0  ·  auto-mesh-2.0"),
          "size": 12.5, "color": GREY_TEXT},
-        {"text": L("Cada número de esta presentación es reproducible "
-                   "ejecutando el código del repositorio.",
-                   "Every number in this deck is reproducible by running the "
-                   "code in the repository."),
+        {"text": L("Cada cálculo se puede rastrear al código; las capturas y "
+                   "renders históricos se identifican como evidencia de origen.",
+                   "Every calculation can be traced to code; historical "
+                   "screenshots and renders are identified as source evidence."),
          "size": 12.5, "color": RGBColor(0x7C, 0x7C, 0x86), "space_before": 8},
     ])
     slide_number(slide, index, dark=True)
@@ -795,8 +799,8 @@ def build():
           L('Una por plantilla: hex certificada, híbrida FVA Método A, equilibrada, calidad crítica, vista rápida, hex dominante, precisión cuadrática y respaldo robusto.',
             'One per template: hex certified, FVA Method A hybrid, balanced, quality critical, fast preview, hex dominant, quadratic accuracy and robust fallback.')),
          (L('2 de investigación FVA', '2 FVA research'),
-          L('D40 pre-solve de 1 ciclo y Método A D40 con malla coincidente de 20 ciclos. Las dos con el solver deliberadamente apagado.',
-            'D40 1-cycle pre-solve and Method A D40 with matching mesh over 20 cycles. Both with the solver deliberately off.')),
+          L('D40 pre-solve de 1 ciclo y configuración de Método A D40 de 20 ciclos con coincidencia a verificar durante el build. Las dos con el solver deliberadamente apagado.',
+            'D40 1-cycle pre-solve and a 20-cycle D40 Method A setup whose matching must be verified at build time. Both with the solver deliberately off.')),
          (L('Un preset no es un atajo', 'A preset is not a shortcut'),
           L('Pasa por las mismas puertas: si el resultado sale del sobre normativo, el error bloquea igual.',
             'It goes through the same gates: if the result leaves the normative envelope, the error blocks it just the same.')),
@@ -848,10 +852,14 @@ def build():
                     "norma.",
                     "Shaft, key and hub are built as independent solids and "
                     "assembled with the tolerances of the standard."),
-                  L("La malla es hexaédrica y coincidente en las interfaces "
-                    "que transmiten carga.",
-                    "The mesh is hexahedral and matching on the interfaces "
-                    "that carry load."),
+                  L("Esta evidencia muestra una malla hexaédrica. La "
+                    "coincidencia exacta de interfaces no se deduce de la "
+                    "imagen: el backend especializado de Método A la comprueba "
+                    "comparando coordenadas de nodos después de mallar.",
+                    "This evidence shows a hexahedral mesh. Exact interface "
+                    "matching is not inferred from the image: the specialized "
+                    "Method A backend checks it by comparing node coordinates "
+                    "after meshing."),
                   L("La captura es la imagen que el propio motor guarda en "
                     "screenshots/ al terminar.",
                     "This is the image the engine itself saves to "

@@ -538,8 +538,8 @@ def chart_pares():
 
     ax.axhline(1302.05, color=RED, lw=1.3, ls=(0, (5, 3)), zorder=4)
     ax.text(-0.42, 1302.05 + 45,
-            L("1 302,05  ·  antes de la corrección",
-              "1,302.05  ·  before the correction"),
+            L("1 302,05  ·  antes de ambas correcciones",
+              "1,302.05  ·  before both corrections"),
             fontsize=8.8, color=RED, ha="left", va="bottom", fontweight="bold",
             family=SANS)
 
@@ -768,8 +768,8 @@ def dia_t2tr():
          size=8.2, color=SOFT, va="top", spacing=1.5)
     card(ax, x0, y - 16.9, w, 7.0, fc="#E9F7EF", r=1.2)
     text(ax, x0 + 2.6, y - 13.4,
-         L("D40 por defecto:  1 302,05  →  999,18 N·m",
-           "bundled D40 default:  1,302.05  →  999.18 N·m"),
+         L("Efecto neto de ambas correcciones:  1 302,05  →  999,18 N·m",
+           "net effect of both corrections:  1,302.05  →  999.18 N·m"),
          size=10.0, weight="bold", color=GREEN)
     return save(fig, "dia_t2tr.png")
 
@@ -1071,8 +1071,10 @@ def dia_estado():
               "no 4.2 solver run and no exact FVA specimen"),
             L("Método A sigue exigiendo un ODB externo resuelto",
               "Method A still needs an externally solved ODB"),
-            L("K_λ, K_R, f_H y f_S siguen en 1,0 sin el texto con licencia",
-              "K_λ, K_R, f_H and f_S stay at 1.0 without the licensed text"),
+            L("K_λ sigue como placeholder neutro; los factores externos "
+              "específicos del caso requieren revisión del texto con licencia",
+              "K_λ remains a neutral placeholder; case-specific external "
+              "factors require review against the licensed text"),
         ]),
     ]
     x, w = 0.0, 32.0
