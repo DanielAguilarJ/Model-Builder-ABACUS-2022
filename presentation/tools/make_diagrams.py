@@ -1115,6 +1115,236 @@ def _wrap(value, width):
     return "\n".join(lines)
 
 
+
+# ------------------------------------------------------------------ diagram 14
+def dia_method_a():
+    """The Method A evidence chain: solved ODB to a criterion."""
+    fig, ax, top = canvas(12.2, 5.9)
+    text(ax, 0, top - 2.3,
+         L("Método A: la cadena de evidencia",
+           "Method A: the evidence chain"), size=15.5, weight="bold")
+    text(ax, 0, top - 6.3,
+         L("Model Builder no resuelve el Método A: consume el resultado de un "
+           "ODB ya resuelto y descargado, y comprueba que sea el que dice ser.",
+           "Model Builder does not solve Method A: it consumes the result of an "
+           "already solved and unloaded ODB, and checks that it is what it "
+           "claims to be."), size=9.0, color=SOFT)
+
+    stages = [
+        ("1", L("ODB resuelto", "Solved ODB"),
+         L("externo, >= 10 ciclos\nconjuntos LEFT y RIGHT\ndel chavetero",
+           "external, >= 10 cycles\nLEFT and RIGHT keyway\nnode sets"), "#E8F1FD"),
+        ("2", L("Emparejado", "Node pairing"),
+         L("por coordenadas SIN\ndeformar; apertura =\nU_right,x - U_left,x",
+           "by UNDEFORMED\ncoordinates; opening =\nU_right,x - U_left,x"), PANEL),
+        ("3", L("CSV canónico", "Canonical CSV"),
+         L("x_mm, z_mm, opening_um\n+ JSON con SHA-256\ndel origen",
+           "x_mm, z_mm, opening_um\n+ JSON sidecar with\nsource SHA-256"), PANEL),
+        ("4", L("Integración", "Integration"),
+         L("trapecio 2-D sobre la\nrejilla; cobertura\ncomprobada al 2 %",
+           "2-D trapezoidal rule\nover the grid; coverage\nchecked to 2 %"), PANEL),
+        ("5", L("Criterio", "Criterion"),
+         L("volumen relativo de\napertura frente a\nv_crit = 0,5",
+           "relative opening\nvolume against\nv_crit = 0.5"), "#E9F7EF"),
+    ]
+    n, gap = len(stages), 1.4
+    w = (100.0 - gap * (n - 1)) / n
+    y, h = top - 24.0, 16.0
+    for i, (num, title, body, fc) in enumerate(stages):
+        x = i * (w + gap)
+        card(ax, x, y, w, h, fc=fc, r=1.4)
+        text(ax, x + 1.4, y + h - 2.6, num, size=8.4, color=BLUE, weight="bold")
+        text(ax, x + 1.4, y + h - 6.4, title, size=9.6, weight="bold")
+        text(ax, x + 1.4, y + 4.4, body, size=6.9, color=SOFT, va="center",
+             spacing=1.55)
+        if i < n - 1:
+            arrow(ax, (x + w + 0.1, y + h / 2.0),
+                  (x + w + gap - 0.1, y + h / 2.0), lw=1.3, scale=9)
+
+    y2 = y - 4.0
+    card(ax, 0, y2 - 12.2, 48.0, 11.8, fc=PANEL, r=1.3)
+    text(ax, 2.2, y2 - 3.0,
+         L("Once comprobaciones, seis con poder de veto",
+           "Eleven checks, six with veto power"), size=9.4, weight="bold")
+    text(ax, 2.2, y2 - 8.4,
+         _wrap(L("Sólo si pasan ciclos mínimos, fotograma descargado, origen "
+                 "identificado, cobertura al 2 %, invariantes revalidados y "
+                 "hash de procedencia, el resultado se declara "
+                 "complete_method_a. Las otras cinco quedan visibles como "
+                 "evidencia de calidad.",
+                 "Only if minimum cycles, unloaded frame, identified source "
+                 "frame, 2 % coverage, revalidated invariants and provenance "
+                 "hash all pass is the result declared complete_method_a. The "
+                 "other five stay visible as quality evidence."), 64),
+         size=7.5, color=SOFT, va="center", spacing=1.6)
+    card(ax, 52.0, y2 - 12.2, 48.0, 11.8, fc="#FDF3E7", r=1.3)
+    text(ax, 54.2, y2 - 3.0,
+         L("Contrato de evidencia versión 2", "Evidence contract version 2"),
+         size=9.4, weight="bold")
+    text(ax, 54.2, y2 - 8.4,
+         _wrap(L("El extractor (fva600-odb-opening-2.0) y el post-proceso "
+                 "(fva600-csv-1.0) comparten versión de contrato, tolerancia "
+                 "de cobertura y procedencia SHA-256: un CSV editado a mano "
+                 "no pasa.",
+                 "The extractor (fva600-odb-opening-2.0) and the "
+                 "post-processor (fva600-csv-1.0) share the contract version, "
+                 "coverage tolerance and SHA-256 provenance: a hand-edited "
+                 "CSV does not pass."), 64),
+         size=7.5, color=SOFT, va="center", spacing=1.6)
+    return save(fig, "dia_method_a.png")
+
+
+# ------------------------------------------------------------------ diagram 15
+def dia_matlab():
+    """The optional MATLAB cross-check, and why it is never the authority."""
+    fig, ax, top = canvas(11.8, 6.3)
+    text(ax, 0, top - 2.3,
+         L("MATLAB como contraste, nunca como autoridad",
+           "MATLAB as a cross-check, never as the authority"),
+         size=15.5, weight="bold")
+    text(ax, 0, top - 6.3,
+         L("El valor que Model Builder usa siempre es el de Python. MATLAB "
+           "sirve para demostrar que otro motor numérico llega al mismo "
+           "número.",
+           "The value Model Builder uses is always the Python one. MATLAB is "
+           "there to show that a second numerical engine reaches the same "
+           "number."), size=9.0, color=SOFT)
+
+    modes = [
+        ("OFF", L("No se exporta nada", "Nothing is exported"),
+         L("el flujo no cambia", "the workflow is unchanged"), "#4B5563"),
+        ("EXPORT", L("Paquete determinista", "Deterministic bundle"),
+         L("mismo contenido, mismos hashes,\nsin ejecutar MATLAB",
+           "same content, same hashes,\nwithout running MATLAB"), "#0B5394"),
+        ("RUN", L("Exporta y ejecuta", "Export and execute"),
+         L("lista de argumentos, shell=False\ny timeout finito",
+           "argument list, shell=False\nand a finite timeout"), GREEN),
+    ]
+    y, h = top - 21.0, 12.4
+    w = 31.4
+    gap = (100.0 - 3 * w) / 2.0
+    for i, (name, title, note, color) in enumerate(modes):
+        x = i * (w + gap)
+        card(ax, x, y, w, h, fc=PANEL, r=1.4)
+        chip(ax, x + 1.5, y + h - 2.9, name, color, size=7.4)
+        text(ax, x + 1.7, y + h - 7.0, title, size=9.8, weight="bold")
+        text(ax, x + 1.7, y + 2.9, note, size=7.4, color=SOFT, va="center",
+             spacing=1.55)
+
+    y2 = y - 3.6
+    card(ax, 0, y2 - 16.8, 48.0, 16.4, fc=PANEL, r=1.3)
+    text(ax, 2.2, y2 - 2.8, L("Qué contiene el paquete",
+                              "What the bundle contains"),
+         size=9.4, weight="bold")
+    files = [
+        ("opening.csv", L("el CSV canonicalizado", "the canonicalised CSV")),
+        ("method_a_input.json", L("las entradas del cálculo",
+                                  "the calculation inputs")),
+        ("python_result.json", L("el resultado autoritativo",
+                                 "the authoritative result")),
+        ("<entry>.m", L("el código MATLAB generado",
+                        "the generated MATLAB source")),
+        ("manifest.json", L("SHA-256 de cada archivo",
+                            "SHA-256 of every file")),
+    ]
+    yy = y2 - 6.4
+    for name, note in files:
+        text(ax, 2.6, yy, name, size=7.6, weight="bold", family=MONO)
+        text(ax, 22.0, yy, note, size=7.4, color=SOFT)
+        yy -= 2.45
+    card(ax, 52.0, y2 - 16.8, 48.0, 16.4, fc="#E9F7EF", r=1.3)
+    text(ax, 54.2, y2 - 2.8, L("Cómo se compara", "How it is compared"),
+         size=9.4, weight="bold")
+    text(ax, 54.2, y2 - 6.4,
+         L("Tolerancia absoluta 1e-10 y relativa 1e-9.\nSi MATLAB discrepa, se "
+           "reporta la discrepancia;\nel número de Python no se toca.",
+           "Absolute tolerance 1e-10, relative 1e-9.\nIf MATLAB disagrees the "
+           "discrepancy is reported;\nthe Python number is not touched."),
+         size=7.6, color=SOFT, va="top", spacing=1.6)
+    text(ax, 54.2, y2 - 13.0,
+         L("El nombre de la función de entrada se valida con\nexpresión "
+           "regular, y verify_bundle vuelve a\ncomprobar los hashes.",
+           "The entry function name is validated by a regular\nexpression, and "
+           "verify_bundle re-checks the\nhashes."),
+         size=7.6, color=MUTED, va="top", spacing=1.6)
+    return save(fig, "dia_matlab.png")
+
+
+# ------------------------------------------------------------------ diagram 16
+def dia_mesh_loop():
+    """How a mesh is actually chosen, per part."""
+    fig, ax, top = canvas(11.8, 6.1)
+    text(ax, 0, top - 2.3,
+         L("Cómo se elige la malla, pieza por pieza",
+           "How the mesh is actually chosen, part by part"),
+         size=15.5, weight="bold")
+    text(ax, 0, top - 6.3,
+         L("El orden de candidatos no es el mismo para todas las piezas: el "
+           "eje y la chaveta empiezan por hexaedro estructurado, el cubo y el "
+           "casquillo por barrido medial.",
+           "The candidate order is not the same for every part: shaft and key "
+           "start with structured hex, hub and bushing with medial sweep."),
+         size=9.0, color=SOFT)
+
+    order = [
+        ("Shaft", "STRUCTURED_HEX"), ("Key", "STRUCTURED_HEX"),
+        ("Bushing", "SWEEP_MEDIAL"), ("Hub", "SWEEP_MEDIAL"),
+    ]
+    y, h = top - 17.0, 8.6
+    w = 23.2
+    gap = (100.0 - 4 * w) / 3.0
+    for i, (part, first) in enumerate(order):
+        x = i * (w + gap)
+        card(ax, x, y, w, h, fc=PANEL, r=1.3)
+        text(ax, x + 1.6, y + h - 3.0, part, size=9.8, weight="bold")
+        text(ax, x + 1.6, y + 2.6,
+             L("primer candidato\n", "first candidate\n") + first,
+             size=7.2, color=SOFT, va="center", spacing=1.5)
+        if i < 3:
+            arrow(ax, (x + w + 0.15, y + h / 2.0),
+                  (x + w + gap - 0.15, y + h / 2.0), lw=1.2, scale=8)
+
+    y2 = y - 3.4
+    steps = [
+        L("particiona la banda de la entalla",
+          "partition the notch band"),
+        L("siembra los arcos del radio", "seed the fillet arcs"),
+        L("aplica la estrategia de control", "apply the control strategy"),
+        L("malla con reparación de AR", "mesh with AR repair"),
+        L("mide y puntúa el candidato", "measure and score the candidate"),
+    ]
+    card(ax, 0, y2 - 9.0, 100, 8.6, fc="#E8F1FD", r=1.3)
+    text(ax, 2.2, y2 - 2.6,
+         L("Cada candidato recorre el mismo ciclo",
+           "Every candidate runs the same loop"), size=9.4, weight="bold")
+    sx = 2.2
+    for i, step in enumerate(steps):
+        text(ax, sx, y2 - 6.4, "%d  %s" % (i + 1, step), size=7.4, color=SOFT)
+        sx += 19.6
+
+    y3 = y2 - 12.4
+    card(ax, 0, y3 - 9.4, 48.0, 9.0, fc=PANEL, r=1.3)
+    text(ax, 2.2, y3 - 2.8, L("Se acepta sólo si pasa todo",
+                              "Accepted only if everything passes"),
+         size=9.4, weight="bold")
+    text(ax, 2.2, y3 - 6.6,
+         L("score, % de hexaedros, relación de aspecto, advertencias, "
+           "reparaciones y presupuesto de elementos.",
+           "score, hex percentage, aspect ratio, warnings, repairs and the "
+           "element budget."), size=7.6, color=SOFT, va="top", spacing=1.6)
+    card(ax, 52.0, y3 - 9.4, 48.0, 9.0, fc="#FDF3E7", r=1.3)
+    text(ax, 54.2, y3 - 2.8, L("El veredicto global es el peor",
+                               "The global verdict is the worst part"),
+         size=9.4, weight="bold")
+    text(ax, 54.2, y3 - 6.6,
+         L("Nunca la media. Y con fail_on_quality, el build falla en lugar de "
+           "entregar una malla que no cumple.",
+           "Never the average. And with fail_on_quality the build fails "
+           "instead of delivering a mesh that does not comply."),
+         size=7.6, color=SOFT, va="top", spacing=1.6)
+    return save(fig, "dia_mesh_loop.png")
+
+
 DIAGRAMS = {
     "arquitectura": dia_arquitectura,
     "pipeline": dia_pipeline,
@@ -1129,6 +1359,9 @@ DIAGRAMS = {
     "release": dia_release,
     "tabs": dia_tabs,
     "estado": dia_estado,
+    "method_a": dia_method_a,
+    "matlab": dia_matlab,
+    "mesh_loop": dia_mesh_loop,
 }
 
 

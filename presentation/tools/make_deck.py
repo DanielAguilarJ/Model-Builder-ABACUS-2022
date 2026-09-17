@@ -190,7 +190,7 @@ def caption(slide, text, top=Inches(6.62), size=11.5, color=None, width=None):
 
 
 # -------------------------------------------------------------- slide recipes
-def slide_hero(prs):
+def slide_hero(prs, index=1):
     slide = add_slide(prs, BLACK)
     box, frame = textbox(slide, MARGIN, Inches(2.18), Inches(11.0), Inches(3.2))
     write(frame, [
@@ -208,11 +208,11 @@ def slide_hero(prs):
                    "DIN 6885-1  ·  DIN 6892 Methods A / B / C  ·  FVA 600 III"),
          "size": 12.5, "color": RGBColor(0x7C, 0x7C, 0x86), "bold": True},
     ])
-    slide_number(slide, 1, dark=True)
+    slide_number(slide, index, dark=True)
     return slide
 
 
-def slide_problema(prs):
+def slide_problema(prs, index=2):
     slide = add_slide(prs, BLACK)
     kicker(slide, L("el problema", "the problem"), dark=True)
     box, frame = textbox(slide, MARGIN, Inches(1.55), Inches(11.4), Inches(3.4))
@@ -245,11 +245,11 @@ def slide_problema(prs):
              "space_before": 7},
         ])
         rule(slide, left, Inches(4.86), Inches(0.9), color=BLUE_DARK, weight=2.0)
-    slide_number(slide, 2, dark=True)
+    slide_number(slide, index, dark=True)
     return slide
 
 
-def slide_kpis(prs):
+def slide_kpis(prs, index=3):
     slide = add_slide(prs)
     kicker(slide, L("qué es", "what it is"))
     heading(slide, L("Una sola herramienta desde la tabla de la norma\nhasta el "
@@ -296,7 +296,7 @@ def slide_kpis(prs):
                      "the screenshots are of the real application and the "
                      "figures are computed by the packaged engine."),
             top=Inches(6.45))
-    slide_number(slide, 3)
+    slide_number(slide, index)
     return slide
 
 
@@ -567,21 +567,63 @@ def slide_cierre(prs, index):
     return slide
 
 
+
+def slide_panels(prs, index, kicker_text, heading_text, sub_text, cards,
+                 caption_text=None, columns=3, heading_size=30):
+    """A grid of small titled panels: used for the feature detail slides."""
+    slide = add_slide(prs)
+    kicker(slide, kicker_text)
+    heading(slide, heading_text, size=heading_size)
+    if sub_text:
+        subheading(slide, sub_text)
+    rows = (len(cards) + columns - 1) // columns
+    gap = Inches(0.22)
+    width = Emu(int((CONTENT_W - gap * (columns - 1)) / columns))
+    top0 = Inches(2.72 if sub_text else 2.20)
+    height = Inches(1.82 if rows > 1 else 2.10)
+    row_gap = Inches(0.20)
+    for position, (title, body) in enumerate(cards):
+        column = position % columns
+        row = position // columns
+        left = Emu(int(MARGIN + column * (width + gap)))
+        top = Emu(int(top0 + row * (height + row_gap)))
+        panel(slide, left, top, width, height)
+        box, frame = textbox(slide, Emu(int(left + Inches(0.24))),
+                             Emu(int(top + Inches(0.20))),
+                             Emu(int(width - Inches(0.48))),
+                             Emu(int(height - Inches(0.32))))
+        write(frame, [
+            {"text": title, "size": 13.5, "bold": True, "color": INK,
+             "spacing": 1.1},
+            {"text": body, "size": 10.5, "color": SOFT, "spacing": 1.3,
+             "space_before": 6},
+        ])
+    if caption_text:
+        caption(slide, caption_text, top=Inches(6.6))
+    slide_number(slide, index)
+    return slide
+
+
 # ------------------------------------------------------------------ assembly
 def build():
     prs = new_deck()
+    counter = [0]
 
-    slide_hero(prs)
-    slide_problema(prs)
-    slide_kpis(prs)
+    def N():
+        counter[0] += 1
+        return counter[0]
 
-    slide_diagram(prs, 4, "dia_arquitectura.png",
+    slide_hero(prs, N())
+    slide_problema(prs, N())
+    slide_kpis(prs, N())
+
+    slide_diagram(prs, N(), "dia_arquitectura.png",
                   L("arquitectura", "architecture"),
                   L("Un cambio en la tabla DIN o en un factor de DIN 6892 se "
                     "escribe una sola vez y llega a los dos intérpretes.",
                     "A change to the DIN table or to a DIN 6892 factor is "
                     "written once and reaches both interpreters."))
-    slide_diagram(prs, 5, "dia_tabs.png", L("cómo se usa", "how it is used"),
+    slide_diagram(prs, N(), "dia_tabs.png", L("cómo se usa", "how it is used"),
                   L("Seis pestañas en el orden en que se toman las decisiones: "
                     "primero el proyecto, después la geometría normativa, y "
                     "sólo al final la ejecución.",
@@ -633,10 +675,12 @@ def build():
             "completos por pieza y conserva el ganador.",
             "The template is chosen by name; AUTO mode compares complete "
             "candidates per part and keeps the winner."),
-          L("Las semillas en 0 significan automático: D/32 en el eje, b/20 en "
-            "la chaveta, d_a/80 en el cubo.",
-            "Seeds left at 0 mean automatic: D/32 on the shaft, b/20 on the "
-            "key, d_a/80 on the hub."),
+          L("Una semilla en 0 significa automático, y la regla sigue al "
+            "refinamiento: con la banda de entalla activa son D/16 en el "
+            "eje y d_a/40 en el cubo. La chaveta siempre b/20.",
+            "A seed left at 0 means automatic, and the rule follows the "
+            "refinement: with the notch band on it is D/16 on the shaft "
+            "and d_a/40 on the hub. The key is always b/20."),
           L("El criterio rápido de presión está marcado CORE-SCREENING: es "
             "plausibilidad, no DIN 6892 Método B.",
             "The quick pressure check is badged CORE-SCREENING: it is "
@@ -730,14 +774,73 @@ def build():
            "expected at the notch.")),
     ]
     for args in shots:
-        slide_shot(prs, args[0], args[1], args[2], args[3], args[4], args[5])
+        slide_shot(prs, N(), args[1], args[2], args[3], args[4], args[5])
 
-    slide_diagram(prs, 13, "dia_pipeline.png",
+    slide_diagram(prs, N(), "dia_pipeline.png",
                   L("flujo de ejecución", "execution flow"))
-    slide_diagram(prs, 14, "dia_workspace.png",
+    slide_diagram(prs, N(), "dia_workspace.png",
                   L("lo que queda en disco", "what stays on disk"))
 
-    slide_render(prs, 15, "model_assembly_hex.png",
+    slide_panels(
+        prs, N(), L('puntos de partida', 'starting points'),
+        L('Quince presets, ninguno que salte la validación',
+          'Fifteen presets, none of which skips validation'),
+        L('Un preset sólo fija parámetros. Después se fusiona sobre los valores por defecto y se vuelve a derivar y validar como si se hubiera teclado a mano.',
+          'A preset only sets parameters. It is then merged onto the defaults and re-derived and re-validated exactly as if it had been typed in by hand.'),
+        [
+         (L('5 de geometría y análisis', '5 geometry and analysis'),
+          L('D25 pequeña, D40 validada por defecto, D50 siguiente banda DIN, D40 cuadrática C3D20 y D40 con análisis de torsión.',
+            'D25 small joint, D40 validated default, D50 next DIN band, D40 quadratic C3D20 and D40 with torsion analysis.')),
+         (L('8 de malla', '8 mesh policies'),
+          L('Una por plantilla: hex certificada, híbrida FVA Método A, equilibrada, calidad crítica, vista rápida, hex dominante, precisión cuadrática y respaldo robusto.',
+            'One per template: hex certified, FVA Method A hybrid, balanced, quality critical, fast preview, hex dominant, quadratic accuracy and robust fallback.')),
+         (L('2 de investigación FVA', '2 FVA research'),
+          L('D40 pre-solve de 1 ciclo y Método A D40 con malla coincidente de 20 ciclos. Las dos con el solver deliberadamente apagado.',
+            'D40 1-cycle pre-solve and Method A D40 with matching mesh over 20 cycles. Both with the solver deliberately off.')),
+         (L('Un preset no es un atajo', 'A preset is not a shortcut'),
+          L('Pasa por las mismas puertas: si el resultado sale del sobre normativo, el error bloquea igual.',
+            'It goes through the same gates: if the result leaves the normative envelope, the error blocks it just the same.')),
+         (L('Se guarda y se recupera', 'Saved and reloaded'),
+          L('La configuración va y vuelve a JSON, así que un caso se entrega como archivo y se reproduce tal cual.',
+            'The configuration round-trips to JSON, so a case can be handed over as a file and reproduced exactly.')),
+         (L('Los presets del paquete están vigilados', 'The bundled presets are guarded'),
+          L('El publicador comprueba campo por campo los dos compañeros FVA: no pueden cambiar en silencio entre versiones.',
+            'The publisher checks the two FVA companions field by field: they cannot change silently between versions.')),
+        ],
+        L('Los presets de malla existen para hacer explícita la política, no para esconderla.',
+          'The mesh presets exist to make the policy explicit, not to hide it.'),
+        columns=3)
+
+    slide_panels(
+        prs, N(), L('espacio de diseño', 'design space'),
+        L('Qué se puede construir, y qué se rechaza a propósito',
+          'What can be built, and what is deliberately refused'),
+        None,
+        [
+         (L('Formas de chaveta', 'Key forms'),
+          L('A, B y AB implementadas. De C a J se rechazan con un mensaje propio: necesitan cotas de taladro y chaflán que no están implementadas.',
+            'A, B and AB implemented. C through J are refused with their own message: they need hole and chamfer dimensions that are not implemented.')),
+         (L('Cubo cilíndrico o cónico', 'Cylindrical or tapered hub'),
+          L('El cónico añade un cuarto sólido, el casquillo, y desactiva el refinamiento de banda de la entalla; el modelo lo declara.',
+            'Tapered adds a fourth solid, the bushing, and switches off the notch band refinement; the model declares it.')),
+         (L('Diámetro', 'Diameter'),
+          L('Continuo en 6 < d1 <= 500 mm, resuelto a una de las 26 filas. Fuera de ahí lanza excepción en lugar de aproximar.',
+            'Continuous over 6 < d1 <= 500 mm, resolved to one of the 26 rows. Outside that it raises instead of approximating.')),
+         (L('Orden y tipo de elemento', 'Element order and type'),
+          L('Lineal o cuadrático (por defecto), C3D8/C3D8I o C3D20/C3D20R. C3D8R sólo se acepta como elección explícita heredada, y levanta advertencia.',
+            'Linear or quadratic (default), C3D8/C3D8I or C3D20/C3D20R. C3D8R is accepted only as an explicit legacy choice, and it raises a warning.')),
+         (L('Semillas automáticas', 'Automatic seeds'),
+          L('Con refinamiento de entalla, que es el defecto: D/16 en el eje y d_a/40 en el cubo. Sin él, D/32 y d_a/80. La regla aplicada se escribe en la auditoría.',
+            'With notch refinement, which is the default: D/16 on the shaft and d_a/40 on the hub. Without it, D/32 and d_a/80. The rule actually used is written into the audit.')),
+         (L('Modo de cumplimiento', 'Compliance mode'),
+          L('Normativo o anulación del usuario. Salirse del sobre está permitido; lo que no está permitido es que no se note.',
+            'Normative or user override. Leaving the envelope is allowed; what is not allowed is for it to go unnoticed.')),
+        ],
+        None,
+        columns=3)
+
+
+    slide_render(prs, N(), "model_assembly_hex.png",
                  L("el resultado", "the result"),
                  L("Sólidos, no cascarones", "Solids, not shells"),
                  [L("Eje, chaveta y cubo se construyen como volúmenes "
@@ -753,7 +856,7 @@ def build():
                     "screenshots/ al terminar.",
                     "This is the image the engine itself saves to "
                     "screenshots/ when it finishes.")])
-    slide_render(prs, 16, "model_notch_section.png",
+    slide_render(prs, N(), "model_notch_section.png",
                  L("el detalle que importa", "the detail that matters"),
                  L("La banda del chavetero", "The keyway band"),
                  [L("En la sección se ve la banda de elementos más finos que "
@@ -777,22 +880,174 @@ def build():
                     "off to an unrelated hot spot.")],
                  dark=False)
 
-    slide_diagram(prs, 17, "dia_malla.png", L("política de malla", "mesh policy"))
-    slide_diagram(prs, 18, "dia_badges.png", L("trazabilidad", "traceability"))
-    slide_din6885(prs, 19)
-    slide_diagram(prs, 20, "dia_metodos.png",
+    slide_diagram(prs, N(), "dia_malla.png", L("política de malla", "mesh policy"))
+
+    slide_diagram(prs, N(), "dia_mesh_loop.png",
+                  L("selección de malla", "mesh selection"))
+
+    slide_panels(
+        prs, N(), L('montaje del análisis', 'analysis setup'),
+        L('Si se pide análisis, esto es lo que se monta',
+          'If the analysis is requested, this is what gets built'),
+        None,
+        [
+         (L('Contacto', 'Contact'),
+          L('Contacto general con rozamiento por penalización isótropo y comportamiento normal duro con separación permitida.',
+            'General contact with isotropic penalty friction and hard normal behaviour with separation allowed.')),
+         (L('Extremo motriz', 'Drive end'),
+          L('Superficie en el extremo del eje, punto de referencia y acoplamiento cinemático sobre toda la superficie.',
+            'Surface at the shaft end, a reference point and a kinematic coupling over the whole surface.')),
+         (L('Región sujeta', 'Held region'),
+          L('El diámetro exterior del cubo o sus dos caras, empotrado. Es una elección del usuario, no un supuesto oculto.',
+            'The hub outer diameter or both hub faces, encastred. A user choice, not a hidden assumption.')),
+         (L('Paso', 'Step'),
+          L('Paso estático TORSION, con no linealidad geométrica y estabilización opcionales y control de incremento del formulario.',
+            'Static TORSION step, with optional geometric nonlinearity and stabilization, and increment control from the form.')),
+         (L('Carga', 'Load'),
+          L('Momento sobre el eje aplicado en el punto de referencia; el punto guía bloquea todos los grados de libertad menos el giro.',
+            'A moment about the shaft axis applied at the reference point; the guide point locks every degree of freedom except the rotation.')),
+         (L('Salidas', 'Output'),
+          L('Campo S, U, E, RF, CSTRESS y CDISP en cuatro intervalos; historia UR3 y RM3 en el punto de referencia.',
+            'Field S, U, E, RF, CSTRESS and CDISP at four intervals; history UR3 and RM3 at the reference point.')),
+        ],
+        L('Crear el trabajo y enviarlo al solver siguen siendo dos decisiones separadas, y ninguna es el valor por defecto.',
+          'Creating the job and submitting it to the solver remain two separate decisions, and neither is the default.'),
+        columns=3)
+
+    slide_diagram(prs, N(), "dia_badges.png", L("trazabilidad", "traceability"))
+    slide_din6885(prs, N())
+
+    slide_panels(
+        prs, N(), L('la auditoría', 'the audit'),
+        L('El archivo que dice qué se construyó de verdad',
+          'The file that says what was actually built'),
+        None,
+        [
+         (L('Dos formatos', 'Two formats'),
+          L('PARAM_BUILD_AUDIT.txt para leerlo con los ojos y .json para procesarlo con una herramienta.',
+            'PARAM_BUILD_AUDIT.txt to read with your eyes and .json to process with a tool.')),
+         (L('Un veredicto', 'A verdict'),
+          L('OK o CHECK, y el mismo veredicto se refleja en el resultado del build: no hay dos versiones de la verdad.',
+            'OK or CHECK, and the same verdict is mirrored into the build result: there are not two versions of the truth.')),
+         (L('Procedencia', 'Provenance'),
+          L('SHA-256 de los archivos del motor y del núcleo que produjeron ese modelo, no de los que estén hoy en disco.',
+            'SHA-256 of the engine and core files that produced that model, not of whatever is on disk today.')),
+         (L('Plan frente a realidad', 'Plan versus reality'),
+          L('La malla planificada y la realizada, pieza por pieza. Si no coinciden, el proyecto no se declara correcto.',
+            'The planned mesh and the realised one, part by part. If they disagree, the project is not declared sound.')),
+         (L('Por pieza', 'Per part'),
+          L('Elementos, score de calidad, proporción de hexaedros, relación de aspecto, reparaciones e historial de intentos.',
+            'Elements, quality score, hex share, aspect ratio, repairs and the attempt history.')),
+         (L('La lista de avisos', 'The issue list'),
+          L('Cada advertencia con su código estable, más las etiquetas de evidencia y los conjuntos y superficies creados.',
+            'Every warning with its stable code, plus the evidence badges and the sets and surfaces created.')),
+        ],
+        None,
+        columns=3)
+
+    slide_panels(
+        prs, N(), L('el entregable', 'the deliverable'),
+        L('El informe es el producto, no un extra',
+          'The report is the product, not an extra'),
+        None,
+        [
+         (L('Diez secciones', 'Ten sections'),
+          L('Proyecto y procedencia, alcance, geometría, DIN 6892 y normas, validación, malla y política, comprobaciones, evidencia, entregables y limitaciones.',
+            'Project and provenance, scope, geometry, DIN 6892 and standards, validation, mesh and policy, checks, evidence, deliverables and limitations.')),
+         (L('Tres archivos y un log', 'Three files and a log'),
+          L('report.tex para revisar, report.pdf para firmar, report_data.json para procesar y latex_build.log para depurar.',
+            'report.tex to review, report.pdf to sign, report_data.json to process and latex_build.log to debug.')),
+         (L('Trilingüe', 'Trilingual'),
+          L('Se emite en el idioma del proyecto, desde los mismos catálogos de 650 claves que usa la interfaz.',
+            "Emitted in the project's language, from the same 650-key catalogues the interface uses.")),
+         (L('Las etiquetas sobreviven', 'The badges survive'),
+          L('Cada valor llega al PDF con su etiqueta de procedencia como distintivo de color, no como nota al pie.',
+            'Every value reaches the PDF with its provenance badge as a coloured chip, not as a footnote.')),
+         (L('Compilación', 'Compilation'),
+          L('latexmk si está, dos pasadas de pdflatex si no, sin shell y con tiempo límite finito.',
+            'latexmk when available, two pdflatex passes otherwise, with no shell and a finite timeout.')),
+         (L('Sin LaTeX instalado', 'With no LaTeX installed'),
+          L('Escribe el .tex, lo dice con un mensaje traducido y no tumba el build por algo que no es del modelo.',
+            "It writes the .tex, says so with a translated message, and does not fail the build over something that is not the model's fault.")),
+        ],
+        None,
+        columns=3)
+
+    slide_diagram(prs, N(), "dia_metodos.png",
                   L("capacidad resistente", "load capacity"))
-    slide_diagram(prs, 21, "chart_pares.png", L("resultados", "results"))
-    slide_diagram(prs, 22, "dia_t2tr.png",
+    slide_diagram(prs, N(), "chart_pares.png", L("resultados", "results"))
+    slide_diagram(prs, N(), "dia_t2tr.png",
                   L("corrección 1 de 2", "correction 1 of 2"))
-    slide_diagram(prs, 23, "chart_fw.png",
+    slide_diagram(prs, N(), "chart_fw.png",
                   L("corrección 2 de 2", "correction 2 of 2"))
-    slide_diagram(prs, 24, "dia_eq9.png", L("hallazgo abierto", "open finding"))
-    slide_verificacion(prs, 25)
-    slide_diagram(prs, 26, "dia_release.png", L("distribución", "distribution"))
-    slide_diagram(prs, 27, "dia_estado.png", L("estado", "status"))
-    slide_pasos(prs, 28)
-    slide_cierre(prs, 29)
+    slide_diagram(prs, N(), "dia_eq9.png", L("hallazgo abierto", "open finding"))
+
+    slide_diagram(prs, N(), "dia_method_a.png", L("Método A", "Method A"))
+    slide_diagram(prs, N(), "dia_matlab.png",
+                  L("contraste numérico", "numerical cross-check"))
+
+    slide_panels(
+        prs, N(), L('catálogo FVA 600 III', 'FVA 600 III catalogue'),
+        L('Ocho configuraciones concretas, no un dominio continuo',
+          'Eight discrete configurations, not a continuous domain'),
+        None,
+        [
+         (L('VB1 a VB8', 'VB1 to VB8'),
+          L('Cada variante fija d_w, l_tr/d_w, Q_A, la interferencia, la razón de carga R y la forma de chaveta.',
+            'Each variant fixes d_w, l_tr/d_w, Q_A, the interference, the load ratio R and the key form.')),
+         (L('Son puntos, no un rango', 'They are points, not a range'),
+          L('El catálogo está documentado como configuraciones discretas de investigación: interpolar entre ellas no está respaldado.',
+            'The catalogue is documented as discrete research configurations: interpolating between them is not supported.')),
+         (L('VB1, la referencia', 'VB1, the reference'),
+          L('d_w = 40 mm, l_tr/d_w = 0,95, Q_A = 0,5, R = 0 y chaveta forma A. Es la variante de los presets del paquete.',
+            'd_w = 40 mm, l_tr/d_w = 0.95, Q_A = 0.5, R = 0 and a form A key. It is the variant of the bundled presets.')),
+         (L('Modelos de material', 'Material models'),
+          L('Chaboche-Lemaitre combinado en el eje, UML Ramberg-Osgood en el cubo y elástico-plástico ideal en la chaveta.',
+            'Chaboche-Lemaitre combined on the shaft, UML Ramberg-Osgood on the hub and elastic-ideal-plastic on the key.')),
+         (L('Malla coincidente', 'Matching mesh'),
+          L('Cinco interfaces verificadas después de mallar, con tamaño objetivo 0,8 mm y tolerancia de 1e-6 mm.',
+            'Five interfaces verified after meshing, with a 0.8 mm target size and a 1e-6 mm tolerance.')),
+         (L('COINCIDENTE se gana', 'MATCHED is earned'),
+          L('Sólo se declara tras comparar coordenadas reales de nodos en cada interfaz que transmite carga. Sembrar igual no es prueba.',
+            'Only declared after comparing real node coordinates on every load-carrying interface. Equal seeding is not proof.')),
+        ],
+        None,
+        columns=3)
+
+    slide_verificacion(prs, N())
+
+    slide_panels(
+        prs, N(), L('robustez', 'robustness'),
+        L('Decisiones que evitan clases enteras de error',
+          'Decisions that rule out whole classes of error'),
+        None,
+        [
+         (L('Sin shell', 'No shell'),
+          L('El lanzador se construye como lista de argumentos; shell=True no se usa nunca y los caracteres de control se rechazan.',
+            'The launcher is built as an argument list; shell=True is never used and control characters are rejected.')),
+         (L('Contenido', 'Contained'),
+          L('El subproceso corre con cwd = jobs/ y las rutas de artefactos tienen que ser absolutas: no hay respaldo al directorio actual.',
+            'The subprocess runs with cwd = jobs/ and artifact routes must be absolute: there is no fallback to the current directory.')),
+         (L('Tres candados NOJOB', 'Three NOJOB guards'),
+          L('Ni objetos de trabajo, ni archivos de solver, más una comprobación explícita de configuración.',
+            'No job objects, no solver files, plus an explicit configuration check.')),
+         (L('Detener significa detener', 'Cancel means cancel'),
+          L('Se mata el árbol completo de procesos del solver y el proyecto queda marcado como CANCELLED, no como terminado.',
+            'The whole solver process tree is killed and the project is marked CANCELLED, not finished.')),
+         (L('Escrituras atómicas', 'Atomic writes'),
+          L('Cada JSON se escribe en .tmp y se renombra, así que una caída no puede dejar medio manifiesto.',
+            'Every JSON is written to .tmp and renamed, so a crash cannot leave half a manifest.')),
+         (L('Nada con licencia se distribuye', 'Nothing licensed ships'),
+          L('Los documentos DIN y FVA se quedan fuera del paquete por lista blanca, no por descuido.',
+            'DIN and FVA documents stay out of the package by whitelist, not by accident.')),
+        ],
+        None,
+        columns=3)
+
+    slide_diagram(prs, N(), "dia_release.png", L("distribución", "distribution"))
+    slide_diagram(prs, N(), "dia_estado.png", L("estado", "status"))
+    slide_pasos(prs, N())
+    slide_cierre(prs, N())
 
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     prs.save(OUTPUT)
