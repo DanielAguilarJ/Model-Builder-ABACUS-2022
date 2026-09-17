@@ -712,16 +712,22 @@ def build():
             "Every issue has a stable code, a canonical English message and a "
             "translated presentation. The code is what gets cited in the "
             "report and in a review."),
-          L("Aquí se ven los tres avisos nuevos: un factor licenciado todavía "
-            "neutro, la ecuación 9 optimista y N_W deducido de R.",
-            "The three new warnings are visible here: a licensed factor still "
-            "neutral, the optimistic equation 9, and N_W derived from R."),
+          L("El diálogo informa el resultado, no lo adorna: sin errores, el "
+            "recuento de advertencias y el recordatorio de que el cálculo "
+            "resistente sigue etiquetado CORE-SCREENING.",
+            "The dialog reports the outcome, it does not dress it up: no "
+            "errors, the warning count, and the reminder that the strength "
+            "calculation stays labelled CORE-SCREENING."),
           L("Un error bloquea la construcción antes de tocar Abaqus; una "
-            "advertencia informa y queda registrada.",
+            "advertencia informa y queda registrada en la auditoría.",
             "An error blocks the build before Abaqus is touched; a warning "
-            "informs and is recorded.")],
-         L("0 errores y 3 advertencias en la configuración por defecto.",
-           "0 errors and 3 warnings in the default configuration.")),
+            "informs and is recorded in the audit.")],
+         L("Por defecto: 0 errores y 3 advertencias — un factor licenciado "
+           "todavía neutro, la ecuación 9 optimista y una relación de aspecto "
+           "axial alta esperada en la entalla.",
+           "By default: 0 errors and 3 warnings — a licensed factor still "
+           "neutral, the optimistic equation 9, and a high axial aspect ratio "
+           "expected at the notch.")),
     ]
     for args in shots:
         slide_shot(prs, args[0], args[1], args[2], args[3], args[4], args[5])
